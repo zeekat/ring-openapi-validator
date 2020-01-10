@@ -1,0 +1,4630 @@
+{
+  "openapi" : "3.0.2",
+  "info" : {
+    "title" : "Open Education API",
+    "description" : "OpenAPI (fka Swagger) specification for the Open Education API.\n\n# Hypermedia API\nThe Open Education API is designed as a *hypermedia API*. In short, this means all responses will contain hypermedia links\nto simplify the navigation between the different API calls. Each link (except `self`) is optional. When a specific link is\nnot provided, this could mean the relation does not exist or the targeted endpoint is not implemented. Each client is responsible\nfor checking and handling the links correctly.\n\n# Error responses\nError responses are formatted in the `problem+json` media type ([RFC7807](https://tools.ietf.org/html/rfc7807)):\n\n```\n{\n  \"code\": 404,\n  \"title\": \"Resource not found\"\n}\n```\n",
+    "version" : "3.0",
+    "x-logo" : {
+      "url" : "logo.png"
+    }
+  },
+  "servers" : [ {
+    "url" : "/"
+  } ],
+  "tags" : [ {
+    "name" : "service metadata",
+    "description" : "The service API provides additional metadata needed to make the OOAPI fit for this educational institution."
+  }, {
+    "name" : "institution",
+    "description" : "Information on the institution (of higher education) that is exposing this API."
+  }, {
+    "name" : "persons",
+    "description" : "The persons API provides information about persons related to an educational institute."
+  }, {
+    "name" : "faculties",
+    "description" : "The faculties API provides The organizational parts of an organization (faculty, cluser, domain, etc.) Types can be extended in the metadata service."
+  }, {
+    "name" : "educational departments",
+    "description" : "The educational departments API provides the organizational department that is responsible for the execution and recognition of courses."
+  }, {
+    "name" : "educational plans",
+    "description" : "The educational plans API provides a coherent set of educational components, that a person is currently working on or is planning on completing. Usually based on an educationalProgramme."
+  }, {
+    "name" : "educational programmes",
+    "description" : "The educational programmes API provides a coherent set of educational components, aimed at the realization of  competences or objectives in the field of knowledge, insight, attitudes and skills that the person who completes the program must have."
+  }, {
+    "name" : "course groups",
+    "description" : "The course groups API provides collection of educational components (either courses or courseGroups) that can be offered as a whole to a person."
+  }, {
+    "name" : "courses",
+    "description" : "The courses API provides a self-contained and formally structured learning experience. Aimed at providing learning outcomes to students. Usually placed in the context of an educationalProgramme."
+  }, {
+    "name" : "course offerings",
+    "description" : "The course offerings API provides an instance of a course which has a global timeframe, e.g. a period to which students can enroll and specific lecturers are assigned."
+  }, {
+    "name" : "course results",
+    "description" : "The course result API provides the aggregated result of a course based on the underlying test results by a student."
+  }, {
+    "name" : "test results",
+    "description" : "The test result API provides the result of executing a test activity."
+  }, {
+    "name" : "buildings",
+    "description" : "The building API provides a building that is currently used by the organization. Including all location details."
+  }, {
+    "name" : "rooms",
+    "description" : "The rooms API provides the part of a building where an activity can take place. Including detail information on the resources available, number of seats, etc. (Updated continuously)"
+  }, {
+    "name" : "schedules",
+    "description" : "The schedules API provides the planned learning activity visible in a student view and a lecturer view. Schedules provide the answer to who, what, when, where, additional information for a learnign activity. (Updated on ad hoc-base)"
+  }, {
+    "name" : "news feeds",
+    "description" : "The news feeds API provides An aggregation of news items regarding a specific theme. (Updated on ad hoc-base)"
+  }, {
+    "name" : "news items",
+    "description" : "The news items API provides a message containing relevant information about an activity taking place a person or a resource. (Updated on ad hoc-base)"
+  } ],
+  "paths" : {
+    "/" : {
+      "get" : {
+        "tags" : [ "service metadata" ],
+        "summary" : "GET /",
+        "description" : "Get metadata for the service.",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Service"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/institution" : {
+      "get" : {
+        "tags" : [ "institution" ],
+        "summary" : "GET /institution",
+        "description" : "Get institution data of provider of this service.",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Institution"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/persons" : {
+      "get" : {
+        "tags" : [ "persons" ],
+        "summary" : "GET /persons",
+        "description" : "Get an ordered list of all persons.",
+        "parameters" : [ {
+          "name" : "pageSize",
+          "in" : "query",
+          "description" : "The number of items per page",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 10,
+            "enum" : [ 10, 20, 50, 100, 250 ]
+          }
+        }, {
+          "name" : "pageNumber",
+          "in" : "query",
+          "description" : "The page number to get",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "order",
+          "in" : "query",
+          "description" : "The field to sort on",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : "surname_asc",
+            "enum" : [ "surname_asc", "surname_desc", "givenName_asc", "givenName_desc" ]
+          }
+        }, {
+          "name" : "surname",
+          "in" : "query",
+          "description" : "Filter by surname",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "displayName",
+          "in" : "query",
+          "description" : "Filter by displayName",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "affiliation",
+          "in" : "query",
+          "description" : "Filter by affiliation",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "student", "employee", "staff", "member", "affiliate", "organization" ]
+          }
+        }, {
+          "name" : "educationalDepartment",
+          "in" : "query",
+          "description" : "Filter by educational department (educationalDepartmentId)",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "educationalPlan",
+          "in" : "query",
+          "description" : "Filter by educational plan (educationalPlanId)",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "courseGroup",
+          "in" : "query",
+          "description" : "Filter by course group (courseGroupId)",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "course",
+          "in" : "query",
+          "description" : "Filter by course (courseId)",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "required" : [ "_embedded", "_links", "pageSize" ],
+                  "type" : "object",
+                  "properties" : {
+                    "pageSize" : {
+                      "type" : "integer",
+                      "description" : "The number of items per page",
+                      "format" : "int32"
+                    },
+                    "pageNumber" : {
+                      "type" : "integer",
+                      "description" : "The current page number",
+                      "format" : "int32"
+                    },
+                    "_embedded" : {
+                      "required" : [ "items" ],
+                      "type" : "object",
+                      "properties" : {
+                        "items" : {
+                          "type" : "array",
+                          "items" : {
+                            "$ref" : "#/components/schemas/Person"
+                          }
+                        }
+                      }
+                    },
+                    "_links" : {
+                      "required" : [ "self" ],
+                      "type" : "object",
+                      "properties" : {
+                        "self" : {
+                          "required" : [ "href" ],
+                          "type" : "object",
+                          "properties" : {
+                            "href" : {
+                              "type" : "string",
+                              "description" : "Link to current page",
+                              "format" : "uri"
+                            }
+                          }
+                        },
+                        "prev" : {
+                          "required" : [ "href" ],
+                          "type" : "object",
+                          "properties" : {
+                            "href" : {
+                              "type" : "string",
+                              "description" : "Link to previous page",
+                              "format" : "uri"
+                            }
+                          }
+                        },
+                        "next" : {
+                          "required" : [ "href" ],
+                          "type" : "object",
+                          "properties" : {
+                            "href" : {
+                              "type" : "string",
+                              "description" : "Link to next page",
+                              "format" : "uri"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/persons/{personId}" : {
+      "get" : {
+        "tags" : [ "persons" ],
+        "summary" : "GET /persons/{personId}",
+        "description" : "Get a single person.",
+        "parameters" : [ {
+          "name" : "personId",
+          "in" : "path",
+          "description" : "User ID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Person"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/faculties" : {
+      "get" : {
+        "tags" : [ "faculties" ],
+        "summary" : "GET /faculties",
+        "description" : "Get an ordered list of all faculties.",
+        "parameters" : [ {
+          "name" : "pageSize",
+          "in" : "query",
+          "description" : "The number of items per page",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 10,
+            "enum" : [ 10, 20, 50, 100, 250 ]
+          }
+        }, {
+          "name" : "pageNumber",
+          "in" : "query",
+          "description" : "The page number to get",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "order",
+          "in" : "query",
+          "description" : "The field to sort on",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : "facultyId_asc"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "required" : [ "_embedded", "_links", "pageSize" ],
+                  "type" : "object",
+                  "properties" : {
+                    "pageSize" : {
+                      "type" : "integer",
+                      "description" : "The number of items per page",
+                      "format" : "int32"
+                    },
+                    "pageNumber" : {
+                      "type" : "integer",
+                      "description" : "The current page number",
+                      "format" : "int32"
+                    },
+                    "_embedded" : {
+                      "required" : [ "items" ],
+                      "type" : "object",
+                      "properties" : {
+                        "items" : {
+                          "type" : "array",
+                          "items" : {
+                            "$ref" : "#/components/schemas/Faculty"
+                          }
+                        }
+                      }
+                    },
+                    "_links" : {
+                      "required" : [ "self" ],
+                      "type" : "object",
+                      "properties" : {
+                        "self" : {
+                          "required" : [ "href" ],
+                          "type" : "object",
+                          "properties" : {
+                            "href" : {
+                              "type" : "string",
+                              "description" : "Link to current page",
+                              "format" : "uri"
+                            }
+                          }
+                        },
+                        "prev" : {
+                          "required" : [ "href" ],
+                          "type" : "object",
+                          "properties" : {
+                            "href" : {
+                              "type" : "string",
+                              "description" : "Link to previous page",
+                              "format" : "uri"
+                            }
+                          }
+                        },
+                        "next" : {
+                          "required" : [ "href" ],
+                          "type" : "object",
+                          "properties" : {
+                            "href" : {
+                              "type" : "string",
+                              "description" : "Link to next page",
+                              "format" : "uri"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/faculties/{facultyId}" : {
+      "get" : {
+        "tags" : [ "faculties" ],
+        "summary" : "GET /faculties/{facultyId}",
+        "description" : "Get a single faculty.",
+        "parameters" : [ {
+          "name" : "facultyId",
+          "in" : "path",
+          "description" : "Faculty ID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Faculty"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/educational-departments" : {
+      "get" : {
+        "tags" : [ "educational departments" ],
+        "summary" : "GET /educational-departments",
+        "description" : "Get an ordered list of all educational departments.",
+        "parameters" : [ {
+          "name" : "pageSize",
+          "in" : "query",
+          "description" : "The number of items per page",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 10,
+            "enum" : [ 10, 20, 50, 100, 250 ]
+          }
+        }, {
+          "name" : "pageNumber",
+          "in" : "query",
+          "description" : "The page number to get",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "order",
+          "in" : "query",
+          "description" : "The field to sort on",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : "educationalPlanId_asc"
+          }
+        }, {
+          "name" : "student",
+          "in" : "query",
+          "description" : "Filter by student (personId)",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "required" : [ "_embedded", "_links", "pageSize" ],
+                  "type" : "object",
+                  "properties" : {
+                    "pageSize" : {
+                      "type" : "integer",
+                      "description" : "The number of items per page",
+                      "format" : "int32"
+                    },
+                    "pageNumber" : {
+                      "type" : "integer",
+                      "description" : "The current page number",
+                      "format" : "int32"
+                    },
+                    "_embedded" : {
+                      "required" : [ "items" ],
+                      "type" : "object",
+                      "properties" : {
+                        "items" : {
+                          "type" : "array",
+                          "items" : {
+                            "$ref" : "#/components/schemas/EducationalDepartment"
+                          }
+                        }
+                      }
+                    },
+                    "_links" : {
+                      "required" : [ "self" ],
+                      "type" : "object",
+                      "properties" : {
+                        "self" : {
+                          "required" : [ "href" ],
+                          "type" : "object",
+                          "properties" : {
+                            "href" : {
+                              "type" : "string",
+                              "description" : "Link to current page",
+                              "format" : "uri"
+                            }
+                          }
+                        },
+                        "prev" : {
+                          "required" : [ "href" ],
+                          "type" : "object",
+                          "properties" : {
+                            "href" : {
+                              "type" : "string",
+                              "description" : "Link to previous page",
+                              "format" : "uri"
+                            }
+                          }
+                        },
+                        "next" : {
+                          "required" : [ "href" ],
+                          "type" : "object",
+                          "properties" : {
+                            "href" : {
+                              "type" : "string",
+                              "description" : "Link to next page",
+                              "format" : "uri"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/educational-departments/{educationalDepartmentId}" : {
+      "get" : {
+        "tags" : [ "educational departments" ],
+        "summary" : "GET /educational-departments/{educationalDepartmentId}",
+        "description" : "Get a single educational department.",
+        "parameters" : [ {
+          "name" : "educationalDepartmentId",
+          "in" : "path",
+          "description" : "educational department ID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/EducationalDepartment"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/educational-plans" : {
+      "get" : {
+        "tags" : [ "educational plans" ],
+        "summary" : "GET /educational-plans",
+        "description" : "Get an ordered list of all educational plans.",
+        "parameters" : [ {
+          "name" : "pageSize",
+          "in" : "query",
+          "description" : "The number of items per page",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 10,
+            "enum" : [ 10, 20, 50, 100, 250 ]
+          }
+        }, {
+          "name" : "pageNumber",
+          "in" : "query",
+          "description" : "The page number to get",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "order",
+          "in" : "query",
+          "description" : "The field to sort on",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : "educationalPlanId_asc"
+          }
+        }, {
+          "name" : "student",
+          "in" : "query",
+          "description" : "Filter by student (personId)",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "required" : [ "_embedded", "_links", "pageSize" ],
+                  "type" : "object",
+                  "properties" : {
+                    "pageSize" : {
+                      "type" : "integer",
+                      "description" : "The number of items per page",
+                      "format" : "int32"
+                    },
+                    "pageNumber" : {
+                      "type" : "integer",
+                      "description" : "The current page number",
+                      "format" : "int32"
+                    },
+                    "_embedded" : {
+                      "required" : [ "items" ],
+                      "type" : "object",
+                      "properties" : {
+                        "items" : {
+                          "type" : "array",
+                          "items" : {
+                            "$ref" : "#/components/schemas/EducationalPlan"
+                          }
+                        }
+                      }
+                    },
+                    "_links" : {
+                      "required" : [ "self" ],
+                      "type" : "object",
+                      "properties" : {
+                        "self" : {
+                          "required" : [ "href" ],
+                          "type" : "object",
+                          "properties" : {
+                            "href" : {
+                              "type" : "string",
+                              "description" : "Link to current page",
+                              "format" : "uri"
+                            }
+                          }
+                        },
+                        "prev" : {
+                          "required" : [ "href" ],
+                          "type" : "object",
+                          "properties" : {
+                            "href" : {
+                              "type" : "string",
+                              "description" : "Link to previous page",
+                              "format" : "uri"
+                            }
+                          }
+                        },
+                        "next" : {
+                          "required" : [ "href" ],
+                          "type" : "object",
+                          "properties" : {
+                            "href" : {
+                              "type" : "string",
+                              "description" : "Link to next page",
+                              "format" : "uri"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/educational-plans/{educationalPlanId}" : {
+      "get" : {
+        "tags" : [ "educational plans" ],
+        "summary" : "GET /educational-plans/{educationalPlanId}",
+        "description" : "Get a single educational plan.",
+        "parameters" : [ {
+          "name" : "educationalPlanId",
+          "in" : "path",
+          "description" : "Educational plan ID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/EducationalPlan"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/educational-programmes" : {
+      "get" : {
+        "tags" : [ "educational programmes" ],
+        "summary" : "GET /educational-programmes",
+        "description" : "Get an ordered list of all educational programmes.",
+        "parameters" : [ {
+          "name" : "pageSize",
+          "in" : "query",
+          "description" : "The number of items per page",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 10,
+            "enum" : [ 10, 20, 50, 100, 250 ]
+          }
+        }, {
+          "name" : "pageNumber",
+          "in" : "query",
+          "description" : "The page number to get",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "order",
+          "in" : "query",
+          "description" : "The field to sort on",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "student",
+          "in" : "query",
+          "description" : "Filter by student (personId)",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "required" : [ "_embedded", "_links", "pageSize" ],
+                  "type" : "object",
+                  "properties" : {
+                    "pageSize" : {
+                      "type" : "integer",
+                      "description" : "The number of items per page",
+                      "format" : "int32"
+                    },
+                    "_embedded" : {
+                      "required" : [ "items" ],
+                      "type" : "object",
+                      "properties" : {
+                        "items" : {
+                          "type" : "array",
+                          "items" : {
+                            "$ref" : "#/components/schemas/EducationalProgramme"
+                          }
+                        }
+                      }
+                    },
+                    "_links" : {
+                      "required" : [ "self" ],
+                      "type" : "object",
+                      "properties" : {
+                        "self" : {
+                          "required" : [ "href" ],
+                          "type" : "object",
+                          "properties" : {
+                            "href" : {
+                              "type" : "string",
+                              "description" : "Link to current page",
+                              "format" : "uri"
+                            }
+                          }
+                        },
+                        "prev" : {
+                          "required" : [ "href" ],
+                          "type" : "object",
+                          "properties" : {
+                            "href" : {
+                              "type" : "string",
+                              "description" : "Link to previous page",
+                              "format" : "uri"
+                            }
+                          }
+                        },
+                        "next" : {
+                          "required" : [ "href" ],
+                          "type" : "object",
+                          "properties" : {
+                            "href" : {
+                              "type" : "string",
+                              "description" : "Link to next page",
+                              "format" : "uri"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/educational-programmes/{educationalProgrammeId}" : {
+      "get" : {
+        "tags" : [ "educational programmes" ],
+        "summary" : "GET /educational-programmes/{educationalProgrammeId}",
+        "description" : "Get a single educational programme.",
+        "parameters" : [ {
+          "name" : "educationalProgrammeId",
+          "in" : "path",
+          "description" : "Educational programme ID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/EducationalProgramme"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/course-groups" : {
+      "get" : {
+        "tags" : [ "course groups" ],
+        "summary" : "GET /course-groups",
+        "description" : "Get an ordered list of all course groups.",
+        "parameters" : [ {
+          "name" : "pageSize",
+          "in" : "query",
+          "description" : "The number of items per page",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 10,
+            "enum" : [ 10, 20, 50, 100, 250 ]
+          }
+        }, {
+          "name" : "pageNumber",
+          "in" : "query",
+          "description" : "The page number to get",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "order",
+          "in" : "query",
+          "description" : "The field to sort on",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : "courseGroupId_asc"
+          }
+        }, {
+          "name" : "type",
+          "in" : "query",
+          "description" : "Filter by type",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "student",
+          "in" : "query",
+          "description" : "Filter by student (personId)",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "faculty",
+          "in" : "query",
+          "description" : "Filter by faculty (facultyId)",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "educationalDepartment",
+          "in" : "query",
+          "description" : "Filter by educational department (educationalDepartmentId)",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "educationalPlan",
+          "in" : "query",
+          "description" : "Filter by educational plan (educationalPlanId)",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "required" : [ "_embedded", "_links", "pageSize" ],
+                  "type" : "object",
+                  "properties" : {
+                    "pageSize" : {
+                      "type" : "integer",
+                      "description" : "The number of items per page",
+                      "format" : "int32"
+                    },
+                    "pageNumber" : {
+                      "type" : "integer",
+                      "description" : "The current page number",
+                      "format" : "int32"
+                    },
+                    "_embedded" : {
+                      "required" : [ "items" ],
+                      "type" : "object",
+                      "properties" : {
+                        "items" : {
+                          "type" : "array",
+                          "items" : {
+                            "$ref" : "#/components/schemas/CourseGroup"
+                          }
+                        }
+                      }
+                    },
+                    "_links" : {
+                      "required" : [ "self" ],
+                      "type" : "object",
+                      "properties" : {
+                        "self" : {
+                          "required" : [ "href" ],
+                          "type" : "object",
+                          "properties" : {
+                            "href" : {
+                              "type" : "string",
+                              "description" : "Link to current page",
+                              "format" : "uri"
+                            }
+                          }
+                        },
+                        "prev" : {
+                          "required" : [ "href" ],
+                          "type" : "object",
+                          "properties" : {
+                            "href" : {
+                              "type" : "string",
+                              "description" : "Link to previous page",
+                              "format" : "uri"
+                            }
+                          }
+                        },
+                        "next" : {
+                          "required" : [ "href" ],
+                          "type" : "object",
+                          "properties" : {
+                            "href" : {
+                              "type" : "string",
+                              "description" : "Link to next page",
+                              "format" : "uri"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/course-groups/{courseGroupId}" : {
+      "get" : {
+        "tags" : [ "course groups" ],
+        "summary" : "GET /course-groups/{courseGroupId}",
+        "description" : "Get a single course group.",
+        "parameters" : [ {
+          "name" : "courseGroupId",
+          "in" : "path",
+          "description" : "Course Group ID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CourseGroup"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/courses" : {
+      "get" : {
+        "tags" : [ "courses" ],
+        "summary" : "GET /courses",
+        "description" : "Get a list of all courses, ordered by name (ascending).",
+        "parameters" : [ {
+          "name" : "pageSize",
+          "in" : "query",
+          "description" : "The number of items per page",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 10,
+            "enum" : [ 10, 20, 50, 100, 250 ]
+          }
+        }, {
+          "name" : "pageNumber",
+          "in" : "query",
+          "description" : "The page number to get",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "student",
+          "in" : "query",
+          "description" : "Filter by student (personId)",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "faculty",
+          "in" : "query",
+          "description" : "Filter by faculty (facultyId)",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "educationalDepartment",
+          "in" : "query",
+          "description" : "Filter by educational department (educationalDepartmentId)",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "educationalPlan",
+          "in" : "query",
+          "description" : "Filter by educational plan (educationalPlanId)",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "courseGroup",
+          "in" : "query",
+          "description" : "Filter by course group (courseGroupId)",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "required" : [ "_embedded", "_links", "pageSize" ],
+                  "type" : "object",
+                  "properties" : {
+                    "pageSize" : {
+                      "type" : "integer",
+                      "description" : "The number of items per page",
+                      "format" : "int32"
+                    },
+                    "pageNumber" : {
+                      "type" : "integer",
+                      "description" : "The current page number",
+                      "format" : "int32"
+                    },
+                    "_embedded" : {
+                      "required" : [ "items" ],
+                      "type" : "object",
+                      "properties" : {
+                        "items" : {
+                          "type" : "array",
+                          "items" : {
+                            "$ref" : "#/components/schemas/Course"
+                          }
+                        }
+                      }
+                    },
+                    "_links" : {
+                      "required" : [ "self" ],
+                      "type" : "object",
+                      "properties" : {
+                        "self" : {
+                          "required" : [ "href" ],
+                          "type" : "object",
+                          "properties" : {
+                            "href" : {
+                              "type" : "string",
+                              "description" : "Link to current page",
+                              "format" : "uri"
+                            }
+                          }
+                        },
+                        "prev" : {
+                          "required" : [ "href" ],
+                          "type" : "object",
+                          "properties" : {
+                            "href" : {
+                              "type" : "string",
+                              "description" : "Link to previous page",
+                              "format" : "uri"
+                            }
+                          }
+                        },
+                        "next" : {
+                          "required" : [ "href" ],
+                          "type" : "object",
+                          "properties" : {
+                            "href" : {
+                              "type" : "string",
+                              "description" : "Link to next page",
+                              "format" : "uri"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/courses/{courseId}" : {
+      "get" : {
+        "tags" : [ "courses" ],
+        "summary" : "GET /courses/{courseId}",
+        "description" : "Get a single course.",
+        "parameters" : [ {
+          "name" : "courseId",
+          "in" : "path",
+          "description" : "Course ID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Course"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/course-offerings" : {
+      "get" : {
+        "tags" : [ "course offerings" ],
+        "summary" : "GET /course-offerings",
+        "description" : "Get a list of all course offerings, ordered by name (ascending).",
+        "parameters" : [ {
+          "name" : "pageSize",
+          "in" : "query",
+          "description" : "The number of items per page",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 10,
+            "enum" : [ 10, 20, 50, 100, 250 ]
+          }
+        }, {
+          "name" : "pageNumber",
+          "in" : "query",
+          "description" : "The page number to get",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "student",
+          "in" : "query",
+          "description" : "Filter by student (personId)",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "course",
+          "in" : "query",
+          "description" : "Filter by course (courseId)",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "required" : [ "_embedded", "_links", "pageSize" ],
+                  "type" : "object",
+                  "properties" : {
+                    "pageSize" : {
+                      "type" : "integer",
+                      "description" : "The number of items per page",
+                      "format" : "int32"
+                    },
+                    "pageNumber" : {
+                      "type" : "integer",
+                      "description" : "The current page number",
+                      "format" : "int32"
+                    },
+                    "_embedded" : {
+                      "required" : [ "items" ],
+                      "type" : "object",
+                      "properties" : {
+                        "items" : {
+                          "type" : "array",
+                          "items" : {
+                            "$ref" : "#/components/schemas/CourseOffering"
+                          }
+                        }
+                      }
+                    },
+                    "_links" : {
+                      "required" : [ "self" ],
+                      "type" : "object",
+                      "properties" : {
+                        "self" : {
+                          "required" : [ "href" ],
+                          "type" : "object",
+                          "properties" : {
+                            "href" : {
+                              "type" : "string",
+                              "description" : "Link to current page",
+                              "format" : "uri"
+                            }
+                          }
+                        },
+                        "prev" : {
+                          "required" : [ "href" ],
+                          "type" : "object",
+                          "properties" : {
+                            "href" : {
+                              "type" : "string",
+                              "description" : "Link to previous page",
+                              "format" : "uri"
+                            }
+                          }
+                        },
+                        "next" : {
+                          "required" : [ "href" ],
+                          "type" : "object",
+                          "properties" : {
+                            "href" : {
+                              "type" : "string",
+                              "description" : "Link to next page",
+                              "format" : "uri"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/course-offerings/{courseOfferingId}" : {
+      "get" : {
+        "tags" : [ "course offerings" ],
+        "summary" : "GET /courseOfferings/{courseOfferingId}",
+        "description" : "Get a single course offering.",
+        "parameters" : [ {
+          "name" : "courseOfferingId",
+          "in" : "path",
+          "description" : "Course offering ID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CourseOffering"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/course-results" : {
+      "get" : {
+        "tags" : [ "course results" ],
+        "summary" : "GET /course-results",
+        "description" : "Get a list of all course results, ordered by result date (descending).",
+        "parameters" : [ {
+          "name" : "pageSize",
+          "in" : "query",
+          "description" : "The number of items per page",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 10,
+            "enum" : [ 10, 20, 50, 100, 250 ]
+          }
+        }, {
+          "name" : "pageNumber",
+          "in" : "query",
+          "description" : "The page number to get",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "course",
+          "in" : "query",
+          "description" : "Filter by the course (courseId)",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "student",
+          "in" : "query",
+          "description" : "Filter by student (personId)",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "academicYear",
+          "in" : "query",
+          "description" : "Filter by the academic year this result has been achieved in (e.g. `2017-2018`)",
+          "required" : false,
+          "schema" : {
+            "pattern" : "^\\d{4}-\\d{4}$",
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "required" : [ "_embedded", "_links", "pageSize" ],
+                  "type" : "object",
+                  "properties" : {
+                    "pageSize" : {
+                      "type" : "integer",
+                      "description" : "The number of items per page",
+                      "format" : "int32"
+                    },
+                    "pageNumber" : {
+                      "type" : "integer",
+                      "description" : "The current page number",
+                      "format" : "int32"
+                    },
+                    "_embedded" : {
+                      "required" : [ "items" ],
+                      "type" : "object",
+                      "properties" : {
+                        "items" : {
+                          "type" : "array",
+                          "items" : {
+                            "$ref" : "#/components/schemas/CourseResult"
+                          }
+                        }
+                      }
+                    },
+                    "_links" : {
+                      "required" : [ "self" ],
+                      "type" : "object",
+                      "properties" : {
+                        "self" : {
+                          "required" : [ "href" ],
+                          "type" : "object",
+                          "properties" : {
+                            "href" : {
+                              "type" : "string",
+                              "description" : "Link to current page",
+                              "format" : "uri"
+                            }
+                          }
+                        },
+                        "prev" : {
+                          "required" : [ "href" ],
+                          "type" : "object",
+                          "properties" : {
+                            "href" : {
+                              "type" : "string",
+                              "description" : "Link to previous page",
+                              "format" : "uri"
+                            }
+                          }
+                        },
+                        "next" : {
+                          "required" : [ "href" ],
+                          "type" : "object",
+                          "properties" : {
+                            "href" : {
+                              "type" : "string",
+                              "description" : "Link to next page",
+                              "format" : "uri"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/course-results/{courseResultId}" : {
+      "get" : {
+        "tags" : [ "course results" ],
+        "summary" : "GET /course-results/{courseResultId}",
+        "description" : "Get a single course result.",
+        "parameters" : [ {
+          "name" : "courseResultId",
+          "in" : "path",
+          "description" : "Course result ID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CourseResult"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/test-results" : {
+      "get" : {
+        "tags" : [ "test results" ],
+        "summary" : "GET /test-results",
+        "description" : "Get a list of all test results, ordered by test date (descending).",
+        "parameters" : [ {
+          "name" : "pageSize",
+          "in" : "query",
+          "description" : "The number of items per page",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 10,
+            "enum" : [ 10, 20, 50, 100, 250 ]
+          }
+        }, {
+          "name" : "pageNumber",
+          "in" : "query",
+          "description" : "The page number to get",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "course",
+          "in" : "query",
+          "description" : "Filter by the course (courseId)",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "student",
+          "in" : "query",
+          "description" : "Filter by student (personId)",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "required" : [ "_embedded", "_links", "pageSize" ],
+                  "type" : "object",
+                  "properties" : {
+                    "pageSize" : {
+                      "type" : "integer",
+                      "description" : "The number of items per page",
+                      "format" : "int32"
+                    },
+                    "pageNumber" : {
+                      "type" : "integer",
+                      "description" : "The current page number",
+                      "format" : "int32"
+                    },
+                    "_embedded" : {
+                      "required" : [ "items" ],
+                      "type" : "object",
+                      "properties" : {
+                        "items" : {
+                          "type" : "array",
+                          "items" : {
+                            "$ref" : "#/components/schemas/TestResult"
+                          }
+                        }
+                      }
+                    },
+                    "_links" : {
+                      "required" : [ "self" ],
+                      "type" : "object",
+                      "properties" : {
+                        "self" : {
+                          "required" : [ "href" ],
+                          "type" : "object",
+                          "properties" : {
+                            "href" : {
+                              "type" : "string",
+                              "description" : "Link to current page",
+                              "format" : "uri"
+                            }
+                          }
+                        },
+                        "prev" : {
+                          "required" : [ "href" ],
+                          "type" : "object",
+                          "properties" : {
+                            "href" : {
+                              "type" : "string",
+                              "description" : "Link to previous page",
+                              "format" : "uri"
+                            }
+                          }
+                        },
+                        "next" : {
+                          "required" : [ "href" ],
+                          "type" : "object",
+                          "properties" : {
+                            "href" : {
+                              "type" : "string",
+                              "description" : "Link to next page",
+                              "format" : "uri"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/test-results/{testResultId}" : {
+      "get" : {
+        "tags" : [ "test results" ],
+        "summary" : "GET /test-results/{testResultId}",
+        "description" : "Get a single test result.",
+        "parameters" : [ {
+          "name" : "testResultId",
+          "in" : "path",
+          "description" : "Test result ID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/TestResult"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/buildings" : {
+      "get" : {
+        "tags" : [ "buildings" ],
+        "summary" : "GET /buildings",
+        "description" : "Get a list of all buildings, ordered by name (ascending).",
+        "parameters" : [ {
+          "name" : "pageSize",
+          "in" : "query",
+          "description" : "The number of items per page",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 10,
+            "enum" : [ 10, 20, 50, 100, 250 ]
+          }
+        }, {
+          "name" : "pageNumber",
+          "in" : "query",
+          "description" : "The page number to get",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "required" : [ "_embedded", "_links", "pageSize" ],
+                  "type" : "object",
+                  "properties" : {
+                    "pageSize" : {
+                      "type" : "integer",
+                      "description" : "The number of items per page",
+                      "format" : "int32"
+                    },
+                    "pageNumber" : {
+                      "type" : "integer",
+                      "description" : "The current page number",
+                      "format" : "int32"
+                    },
+                    "_embedded" : {
+                      "required" : [ "items" ],
+                      "type" : "object",
+                      "properties" : {
+                        "items" : {
+                          "type" : "array",
+                          "items" : {
+                            "$ref" : "#/components/schemas/Building"
+                          }
+                        }
+                      }
+                    },
+                    "_links" : {
+                      "required" : [ "self" ],
+                      "type" : "object",
+                      "properties" : {
+                        "self" : {
+                          "required" : [ "href" ],
+                          "type" : "object",
+                          "properties" : {
+                            "href" : {
+                              "type" : "string",
+                              "description" : "Link to current page",
+                              "format" : "uri"
+                            }
+                          }
+                        },
+                        "prev" : {
+                          "required" : [ "href" ],
+                          "type" : "object",
+                          "properties" : {
+                            "href" : {
+                              "type" : "string",
+                              "description" : "Link to previous page",
+                              "format" : "uri"
+                            }
+                          }
+                        },
+                        "next" : {
+                          "required" : [ "href" ],
+                          "type" : "object",
+                          "properties" : {
+                            "href" : {
+                              "type" : "string",
+                              "description" : "Link to next page",
+                              "format" : "uri"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/buildings/{buildingId}" : {
+      "get" : {
+        "tags" : [ "buildings" ],
+        "summary" : "GET /buildings/{buildingId}",
+        "description" : "Get a single building.",
+        "parameters" : [ {
+          "name" : "buildingId",
+          "in" : "path",
+          "description" : "Building ID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Building"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rooms" : {
+      "get" : {
+        "tags" : [ "rooms" ],
+        "summary" : "GET /rooms",
+        "description" : "Get a list of all rooms, ordered by name (ascending).",
+        "parameters" : [ {
+          "name" : "pageSize",
+          "in" : "query",
+          "description" : "The number of items per page",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 10,
+            "enum" : [ 10, 20, 50, 100, 250 ]
+          }
+        }, {
+          "name" : "pageNumber",
+          "in" : "query",
+          "description" : "The page number to get",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "building",
+          "in" : "query",
+          "description" : "Filter by building (buildingId)",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "type",
+          "in" : "query",
+          "description" : "Filter by room type (see service metadata for possible values)",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "required" : [ "_embedded", "_links", "pageSize" ],
+                  "type" : "object",
+                  "properties" : {
+                    "pageSize" : {
+                      "type" : "integer",
+                      "description" : "The number of items per page",
+                      "format" : "int32"
+                    },
+                    "pageNumber" : {
+                      "type" : "integer",
+                      "description" : "The current page number",
+                      "format" : "int32"
+                    },
+                    "_embedded" : {
+                      "required" : [ "items" ],
+                      "type" : "object",
+                      "properties" : {
+                        "items" : {
+                          "type" : "array",
+                          "items" : {
+                            "$ref" : "#/components/schemas/Room"
+                          }
+                        }
+                      }
+                    },
+                    "_links" : {
+                      "required" : [ "self" ],
+                      "type" : "object",
+                      "properties" : {
+                        "self" : {
+                          "required" : [ "href" ],
+                          "type" : "object",
+                          "properties" : {
+                            "href" : {
+                              "type" : "string",
+                              "description" : "Link to current page",
+                              "format" : "uri"
+                            }
+                          }
+                        },
+                        "prev" : {
+                          "required" : [ "href" ],
+                          "type" : "object",
+                          "properties" : {
+                            "href" : {
+                              "type" : "string",
+                              "description" : "Link to previous page",
+                              "format" : "uri"
+                            }
+                          }
+                        },
+                        "next" : {
+                          "required" : [ "href" ],
+                          "type" : "object",
+                          "properties" : {
+                            "href" : {
+                              "type" : "string",
+                              "description" : "Link to next page",
+                              "format" : "uri"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rooms/{roomId}" : {
+      "get" : {
+        "tags" : [ "rooms" ],
+        "summary" : "GET /rooms/{roomId}",
+        "description" : "Get a single room.",
+        "parameters" : [ {
+          "name" : "roomId",
+          "in" : "path",
+          "description" : "Room ID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Room"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/schedules" : {
+      "get" : {
+        "tags" : [ "schedules" ],
+        "summary" : "GET /schedules",
+        "description" : "Get a list of all schedules, ordered by startDateTime (ascending).",
+        "parameters" : [ {
+          "name" : "pageSize",
+          "in" : "query",
+          "description" : "The number of items per page",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 10,
+            "enum" : [ 10, 20, 50, 100, 250 ]
+          }
+        }, {
+          "name" : "pageNumber",
+          "in" : "query",
+          "description" : "The page number to get",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "room",
+          "in" : "query",
+          "description" : "Filter by room (roomId)",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "building",
+          "in" : "query",
+          "description" : "Filter by building (buildingId)",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "courseOffering",
+          "in" : "query",
+          "description" : "Filter by course offering (courseOfferingId)",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "student",
+          "in" : "query",
+          "description" : "Filter by student (personId)",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "startDateTime",
+          "in" : "query",
+          "description" : "Filter by minimum startDateTime, RFC3339 (date-time)",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        }, {
+          "name" : "endDateTime",
+          "in" : "query",
+          "description" : "Filter by maximum endDateTime, RFC3339 (date-time)",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "required" : [ "_embedded", "_links", "pageSize" ],
+                  "type" : "object",
+                  "properties" : {
+                    "pageSize" : {
+                      "type" : "integer",
+                      "description" : "The number of items per page",
+                      "format" : "int32"
+                    },
+                    "pageNumber" : {
+                      "type" : "integer",
+                      "description" : "The current page number",
+                      "format" : "int32"
+                    },
+                    "_embedded" : {
+                      "required" : [ "items" ],
+                      "type" : "object",
+                      "properties" : {
+                        "items" : {
+                          "type" : "array",
+                          "items" : {
+                            "$ref" : "#/components/schemas/Schedule"
+                          }
+                        }
+                      }
+                    },
+                    "_links" : {
+                      "required" : [ "self" ],
+                      "type" : "object",
+                      "properties" : {
+                        "self" : {
+                          "required" : [ "href" ],
+                          "type" : "object",
+                          "properties" : {
+                            "href" : {
+                              "type" : "string",
+                              "description" : "Link to current page",
+                              "format" : "uri"
+                            }
+                          }
+                        },
+                        "prev" : {
+                          "required" : [ "href" ],
+                          "type" : "object",
+                          "properties" : {
+                            "href" : {
+                              "type" : "string",
+                              "description" : "Link to previous page",
+                              "format" : "uri"
+                            }
+                          }
+                        },
+                        "next" : {
+                          "required" : [ "href" ],
+                          "type" : "object",
+                          "properties" : {
+                            "href" : {
+                              "type" : "string",
+                              "description" : "Link to next page",
+                              "format" : "uri"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/schedules/{scheduleId}" : {
+      "get" : {
+        "tags" : [ "schedules" ],
+        "summary" : "GET /schedules/{scheduleId}",
+        "description" : "Get a single schedule.",
+        "parameters" : [ {
+          "name" : "scheduleId",
+          "in" : "path",
+          "description" : "Schedule ID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Schedule"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tests" : {
+      "get" : {
+        "tags" : [ "tests" ],
+        "summary" : "GET /tests",
+        "description" : "Get an ordered list of all tests.",
+        "parameters" : [ {
+          "name" : "pageSize",
+          "in" : "query",
+          "description" : "The number of items per page",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 10,
+            "enum" : [ 10, 20, 50, 100, 250 ]
+          }
+        }, {
+          "name" : "pageNumber",
+          "in" : "query",
+          "description" : "The page number to get",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "order",
+          "in" : "query",
+          "description" : "The field to sort on",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : "testId_asc"
+          }
+        }, {
+          "name" : "student",
+          "in" : "query",
+          "description" : "Filter by student (personId)",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "required" : [ "_embedded", "_links", "pageSize" ],
+                  "type" : "object",
+                  "properties" : {
+                    "pageSize" : {
+                      "type" : "integer",
+                      "description" : "The number of items per page",
+                      "format" : "int32"
+                    },
+                    "pageNumber" : {
+                      "type" : "integer",
+                      "description" : "The current page number",
+                      "format" : "int32"
+                    },
+                    "_embedded" : {
+                      "required" : [ "items" ],
+                      "type" : "object",
+                      "properties" : {
+                        "items" : {
+                          "type" : "array",
+                          "items" : {
+                            "$ref" : "#/components/schemas/Test"
+                          }
+                        }
+                      }
+                    },
+                    "_links" : {
+                      "required" : [ "self" ],
+                      "type" : "object",
+                      "properties" : {
+                        "self" : {
+                          "required" : [ "href" ],
+                          "type" : "object",
+                          "properties" : {
+                            "href" : {
+                              "type" : "string",
+                              "description" : "Link to current page",
+                              "format" : "uri"
+                            }
+                          }
+                        },
+                        "prev" : {
+                          "required" : [ "href" ],
+                          "type" : "object",
+                          "properties" : {
+                            "href" : {
+                              "type" : "string",
+                              "description" : "Link to previous page",
+                              "format" : "uri"
+                            }
+                          }
+                        },
+                        "next" : {
+                          "required" : [ "href" ],
+                          "type" : "object",
+                          "properties" : {
+                            "href" : {
+                              "type" : "string",
+                              "description" : "Link to next page",
+                              "format" : "uri"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tests/{testId}" : {
+      "get" : {
+        "tags" : [ "tests" ],
+        "summary" : "GET /tests/{testId}",
+        "description" : "Get a single test.",
+        "parameters" : [ {
+          "name" : "testId",
+          "in" : "path",
+          "description" : "test ID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Test"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/news-feeds" : {
+      "get" : {
+        "tags" : [ "news feeds" ],
+        "summary" : "GET /news-feeds",
+        "description" : "Get a list of all news feeds, ordered by title.",
+        "parameters" : [ {
+          "name" : "pageSize",
+          "in" : "query",
+          "description" : "The number of items per page",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 10,
+            "enum" : [ 10, 20, 50, 100, 250 ]
+          }
+        }, {
+          "name" : "pageNumber",
+          "in" : "query",
+          "description" : "The page number to get",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "required" : [ "_embedded", "_links", "pageSize" ],
+                  "type" : "object",
+                  "properties" : {
+                    "pageSize" : {
+                      "type" : "integer",
+                      "description" : "The number of items per page",
+                      "format" : "int32"
+                    },
+                    "pageNumber" : {
+                      "type" : "integer",
+                      "description" : "The current page number",
+                      "format" : "int32"
+                    },
+                    "_embedded" : {
+                      "required" : [ "items" ],
+                      "type" : "object",
+                      "properties" : {
+                        "items" : {
+                          "type" : "array",
+                          "items" : {
+                            "$ref" : "#/components/schemas/NewsFeed"
+                          }
+                        }
+                      }
+                    },
+                    "_links" : {
+                      "required" : [ "self" ],
+                      "type" : "object",
+                      "properties" : {
+                        "self" : {
+                          "required" : [ "href" ],
+                          "type" : "object",
+                          "properties" : {
+                            "href" : {
+                              "type" : "string",
+                              "description" : "Link to current page",
+                              "format" : "uri"
+                            }
+                          }
+                        },
+                        "prev" : {
+                          "required" : [ "href" ],
+                          "type" : "object",
+                          "properties" : {
+                            "href" : {
+                              "type" : "string",
+                              "description" : "Link to previous page",
+                              "format" : "uri"
+                            }
+                          }
+                        },
+                        "next" : {
+                          "required" : [ "href" ],
+                          "type" : "object",
+                          "properties" : {
+                            "href" : {
+                              "type" : "string",
+                              "description" : "Link to next page",
+                              "format" : "uri"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/news-feeds/{newsFeedId}" : {
+      "get" : {
+        "tags" : [ "news feeds" ],
+        "summary" : "GET /news-feeds/{newsFeedId}",
+        "description" : "Get a single news feed.",
+        "parameters" : [ {
+          "name" : "newsFeedId",
+          "in" : "path",
+          "description" : "News feed ID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/NewsFeed"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/news-items" : {
+      "get" : {
+        "tags" : [ "news items" ],
+        "summary" : "GET /news-items",
+        "description" : "Get an ordered list of all news items.",
+        "parameters" : [ {
+          "name" : "pageSize",
+          "in" : "query",
+          "description" : "The number of items per page",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 10,
+            "enum" : [ 10, 20, 50, 100, 250 ]
+          }
+        }, {
+          "name" : "pageNumber",
+          "in" : "query",
+          "description" : "The page number to get",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "order",
+          "in" : "query",
+          "description" : "The field to sort on",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : "publishDate_desc",
+            "enum" : [ "publishDate_desc", "lastModified_desc" ]
+          }
+        }, {
+          "name" : "newsFeed",
+          "in" : "query",
+          "description" : "Filter by news feed (newsFeedId)",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "required" : [ "_embedded", "_links", "pageSize" ],
+                  "type" : "object",
+                  "properties" : {
+                    "pageSize" : {
+                      "type" : "integer",
+                      "description" : "The number of items per page",
+                      "format" : "int32"
+                    },
+                    "pageNumber" : {
+                      "type" : "integer",
+                      "description" : "The current page number",
+                      "format" : "int32"
+                    },
+                    "_embedded" : {
+                      "required" : [ "items" ],
+                      "type" : "object",
+                      "properties" : {
+                        "items" : {
+                          "type" : "array",
+                          "items" : {
+                            "$ref" : "#/components/schemas/NewsItem"
+                          }
+                        }
+                      }
+                    },
+                    "_links" : {
+                      "required" : [ "self" ],
+                      "type" : "object",
+                      "properties" : {
+                        "self" : {
+                          "required" : [ "href" ],
+                          "type" : "object",
+                          "properties" : {
+                            "href" : {
+                              "type" : "string",
+                              "description" : "Link to current page",
+                              "format" : "uri"
+                            }
+                          }
+                        },
+                        "prev" : {
+                          "required" : [ "href" ],
+                          "type" : "object",
+                          "properties" : {
+                            "href" : {
+                              "type" : "string",
+                              "description" : "Link to previous page",
+                              "format" : "uri"
+                            }
+                          }
+                        },
+                        "next" : {
+                          "required" : [ "href" ],
+                          "type" : "object",
+                          "properties" : {
+                            "href" : {
+                              "type" : "string",
+                              "description" : "Link to next page",
+                              "format" : "uri"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/news-items/{newsItemId}" : {
+      "get" : {
+        "tags" : [ "news items" ],
+        "summary" : "GET /news-items/{newsItemId}",
+        "description" : "Get a single news item.",
+        "parameters" : [ {
+          "name" : "newsItemId",
+          "in" : "path",
+          "description" : "News item ID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/hal+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/NewsItem"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "Service" : {
+        "required" : [ "_links", "documentation", "owner", "specification" ],
+        "type" : "object",
+        "properties" : {
+          "owner" : {
+            "type" : "string",
+            "description" : "Name of the service owner"
+          },
+          "logo" : {
+            "type" : "string",
+            "description" : "URL of the service logo (image dimensions should be 300x300 pixels)",
+            "format" : "uri"
+          },
+          "specification" : {
+            "type" : "string",
+            "description" : "URL of the API specification (YAML or JSON, compliant with [Open API Specification v3](https://github.com/OAI/OpenAPI-Specification/))",
+            "format" : "uri"
+          },
+          "documentation" : {
+            "type" : "string",
+            "description" : "URL of the API documentation, including general terms and privacy statement",
+            "format" : "uri"
+          },
+          "courseLevels" : {
+            "type" : "array",
+            "description" : "Set of course levels for the institution",
+            "example" : [ "Bachelor", "Master" ],
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "roomTypes" : {
+            "type" : "array",
+            "description" : "Set of room types for the institution",
+            "example" : [ "General purpose", "Lecture hall", "PC lab" ],
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "_links" : {
+            "required" : [ "self" ],
+            "type" : "object",
+            "properties" : {
+              "self" : {
+                "required" : [ "href" ],
+                "type" : "object",
+                "properties" : {
+                  "href" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "/"
+                  }
+                },
+                "description" : "Link to current resource"
+              },
+              "endpoints" : {
+                "type" : "array",
+                "description" : "Links to the service (collection) endpoints",
+                "example" : [ {
+                  "href" : "/persons"
+                }, {
+                  "href" : "/faculties"
+                }, {
+                  "href" : "/educational-departments"
+                }, {
+                  "href" : "/educational-plans"
+                }, {
+                  "href" : "/educational-programmes"
+                }, {
+                  "href" : "/institution"
+                }, {
+                  "href" : "/course-groups"
+                }, {
+                  "href" : "/courses"
+                }, {
+                  "href" : "/course-offerings"
+                }, {
+                  "href" : "/course-results"
+                }, {
+                  "href" : "/test-results"
+                }, {
+                  "href" : "/buildings"
+                }, {
+                  "href" : "/rooms"
+                }, {
+                  "href" : "/schedules"
+                }, {
+                  "href" : "/news-feeds"
+                }, {
+                  "href" : "/news-items"
+                } ],
+                "items" : {
+                  "required" : [ "href" ],
+                  "type" : "object",
+                  "properties" : {
+                    "href" : {
+                      "type" : "string",
+                      "format" : "uri"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "Institution" : {
+        "required" : [ "_links", "description", "name" ],
+        "type" : "object",
+        "properties" : {
+          "institutionId" : {
+            "type" : "string",
+            "description" : "id of the institution"
+          },
+          "brin" : {
+            "type" : "string",
+            "description" : "Brincode of the institution"
+          },
+          "name" : {
+            "type" : "string",
+            "description" : "Name of the institution"
+          },
+          "description" : {
+            "type" : "string",
+            "description" : "Any general description of the institution should clearly mention the type of higher education institution, especially in the case of a binary system. In Dutch; universiteit (university) or hogeschool (university of applied sciences)."
+          },
+          "academicCalendar" : {
+            "type" : "object",
+            "properties" : {
+              "year" : {
+                "type" : "string",
+                "description" : "year combination"
+              }
+            },
+            "description" : "links to academic calenders per year"
+          },
+          "address" : {
+            "required" : [ "city", "countryCode", "street", "zip" ],
+            "type" : "object",
+            "properties" : {
+              "street" : {
+                "type" : "string",
+                "description" : "the full street address including house number and street name",
+                "example" : "Moreelsepark 48"
+              },
+              "additional" : {
+                "type" : "string",
+                "description" : "further details like building name, suite, apartment number, etc.",
+                "example" : "On the other side of the road"
+              },
+              "city" : {
+                "type" : "string",
+                "description" : "name of the city / locality",
+                "example" : "Utrecht"
+              },
+              "zip" : {
+                "pattern" : "^[1-9][0-9]{3}[A-Z]{2}$",
+                "type" : "string",
+                "description" : "zip code or postal code",
+                "example" : "3511 EP"
+              },
+              "countryCode" : {
+                "type" : "string",
+                "description" : "the country code according to [iso-3166-1-alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)",
+                "example" : "NL"
+              }
+            },
+            "description" : "the full street address including house number and street name of main building"
+          },
+          "logo" : {
+            "type" : "string",
+            "format" : "uri"
+          },
+          "_links" : {
+            "required" : [ "self" ],
+            "type" : "object",
+            "properties" : {
+              "self" : {
+                "required" : [ "href" ],
+                "type" : "object",
+                "properties" : {
+                  "href" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "/v3/institution"
+                  }
+                },
+                "description" : "Link to current resource"
+              },
+              "educational-programmes" : {
+                "required" : [ "href" ],
+                "type" : "object",
+                "properties" : {
+                  "href" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "/v3/educational-programmes"
+                  }
+                },
+                "description" : "Link to the list of educational programmes at this institution"
+              }
+            }
+          }
+        }
+      },
+      "Person" : {
+        "required" : [ "_links", "affiliations", "displayName", "givenName", "personId", "surname" ],
+        "type" : "object",
+        "properties" : {
+          "personId" : {
+            "type" : "string",
+            "description" : "Unique id of this person"
+          },
+          "givenName" : {
+            "type" : "string",
+            "description" : "The first name of this person"
+          },
+          "surnamePrefix" : {
+            "type" : "string",
+            "description" : "The prefix of the family name of this person"
+          },
+          "surname" : {
+            "type" : "string",
+            "description" : "The family name of this person"
+          },
+          "displayName" : {
+            "type" : "string",
+            "description" : "The name of this person which will be displayed"
+          },
+          "dateOfBirth" : {
+            "type" : "string",
+            "description" : "The date of birth of this person, RFC3339 (full-date)",
+            "format" : "date"
+          },
+          "affiliations" : {
+            "type" : "array",
+            "description" : "The affiliations of how this person is associated with the organization",
+            "items" : {
+              "type" : "string",
+              "enum" : [ "student", "employee", "staff", "member", "affiliate", "organization" ]
+            }
+          },
+          "mail" : {
+            "type" : "string",
+            "description" : "The e-mailaddress of this person",
+            "format" : "email"
+          },
+          "telephoneNumber" : {
+            "type" : "string",
+            "description" : "The telephone number at the office of this person"
+          },
+          "mobileNumber" : {
+            "type" : "string",
+            "description" : "The mobile number of this person"
+          },
+          "photoSocial" : {
+            "type" : "string",
+            "description" : "The url of the informal picture of this person",
+            "format" : "uri"
+          },
+          "photoOfficial" : {
+            "type" : "string",
+            "description" : "The url of the official picture of this person",
+            "format" : "uri"
+          },
+          "gender" : {
+            "type" : "string",
+            "description" : "The first letter of this person's gender",
+            "enum" : [ "M", "F", "U", "X" ]
+          },
+          "title" : {
+            "type" : "string",
+            "description" : "A title to be used for this person"
+          },
+          "office" : {
+            "type" : "string",
+            "description" : "The name of the office where this person is located"
+          },
+          "_links" : {
+            "required" : [ "self" ],
+            "type" : "object",
+            "properties" : {
+              "self" : {
+                "required" : [ "href" ],
+                "type" : "object",
+                "properties" : {
+                  "href" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "/v3/persons/123"
+                  }
+                },
+                "description" : "Link to current resource"
+              },
+              "educationalDepartments" : {
+                "required" : [ "href" ],
+                "type" : "object",
+                "properties" : {
+                  "href" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "/v3/educational-departments?student=123"
+                  }
+                },
+                "description" : "Link to the list of educational departments with which this person is affiliated"
+              },
+              "educationalPlans" : {
+                "required" : [ "href" ],
+                "type" : "object",
+                "properties" : {
+                  "href" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "/v3/educational-plans?student=123"
+                  }
+                },
+                "description" : "Link to the list of educational plans with which this person is affiliated"
+              },
+              "courseGroups" : {
+                "required" : [ "href" ],
+                "type" : "object",
+                "properties" : {
+                  "href" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "/v3/course-groups?student=123"
+                  }
+                },
+                "description" : "Link to the list of course groups for this person"
+              },
+              "courses" : {
+                "required" : [ "href" ],
+                "type" : "object",
+                "properties" : {
+                  "href" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "/v3/courses?student=123"
+                  }
+                },
+                "description" : "Link to the list of courses for this person"
+              },
+              "courseResults" : {
+                "required" : [ "href" ],
+                "type" : "object",
+                "properties" : {
+                  "href" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "/v3/course-results?student=123"
+                  }
+                },
+                "description" : "Link to the list of course results for this person"
+              },
+              "testResults" : {
+                "required" : [ "href" ],
+                "type" : "object",
+                "properties" : {
+                  "href" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "/v3/test-results?student=123"
+                  }
+                },
+                "description" : "Link to the list of test results for this person"
+              },
+              "schedules" : {
+                "required" : [ "href" ],
+                "type" : "object",
+                "properties" : {
+                  "href" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "/v3/schedules?student=123"
+                  }
+                },
+                "description" : "Link to list of the schedules for this person"
+              }
+            }
+          }
+        }
+      },
+      "Problem" : {
+        "required" : [ "status", "title" ],
+        "type" : "object",
+        "properties" : {
+          "status" : {
+            "type" : "string",
+            "description" : "The HTTP status code",
+            "example" : "404"
+          },
+          "title" : {
+            "type" : "string",
+            "description" : "A short, human-readable summary of the problem type",
+            "example" : "Resource not found"
+          },
+          "detail" : {
+            "type" : "string",
+            "description" : "A human-readable explanation specific to this occurrence of the problem"
+          }
+        }
+      },
+      "Faculty" : {
+        "required" : [ "_links", "facultyId", "name", "type" ],
+        "type" : "object",
+        "properties" : {
+          "facultyId" : {
+            "type" : "string",
+            "description" : "Unique id for this faculty"
+          },
+          "type" : {
+            "type" : "string",
+            "description" : "The type of faculty (e.g. institute, faculty, domain)"
+          },
+          "name" : {
+            "type" : "string",
+            "description" : "The name of this faculty"
+          },
+          "description" : {
+            "type" : "string",
+            "description" : "The description of this faculty"
+          },
+          "_links" : {
+            "required" : [ "self" ],
+            "type" : "object",
+            "properties" : {
+              "self" : {
+                "required" : [ "href" ],
+                "type" : "object",
+                "properties" : {
+                  "href" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "/v3/faculties/123"
+                  }
+                },
+                "description" : "Link to current resource"
+              },
+              "parentFaculty" : {
+                "required" : [ "href", "title" ],
+                "type" : "object",
+                "properties" : {
+                  "href" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "/v3/faculties/123"
+                  },
+                  "title" : {
+                    "type" : "string",
+                    "description" : "The name of the faculty"
+                  }
+                },
+                "description" : "Link to the parent faculty"
+              },
+              "childFaculties" : {
+                "type" : "array",
+                "description" : "Link to the child faculaties",
+                "items" : {
+                  "required" : [ "href", "title" ],
+                  "type" : "object",
+                  "properties" : {
+                    "href" : {
+                      "type" : "string",
+                      "format" : "uri",
+                      "example" : "/v3/faculties/123"
+                    },
+                    "title" : {
+                      "type" : "string",
+                      "description" : "The name of the faculty"
+                    }
+                  }
+                }
+              },
+              "educationalDepartments" : {
+                "type" : "array",
+                "description" : "Links to the educational departments of this faculty",
+                "items" : {
+                  "required" : [ "href", "title" ],
+                  "type" : "object",
+                  "properties" : {
+                    "href" : {
+                      "type" : "string",
+                      "format" : "uri",
+                      "example" : "/v3/educational-departments/123"
+                    },
+                    "title" : {
+                      "type" : "string",
+                      "description" : "The name of the educational department"
+                    }
+                  }
+                }
+              },
+              "educationalPlans" : {
+                "type" : "array",
+                "description" : "Links to the educational plans of this faculty",
+                "items" : {
+                  "required" : [ "href", "title" ],
+                  "type" : "object",
+                  "properties" : {
+                    "href" : {
+                      "type" : "string",
+                      "format" : "uri",
+                      "example" : "/v3/educational-plans/123"
+                    },
+                    "title" : {
+                      "type" : "string",
+                      "description" : "The name of the educational plan"
+                    }
+                  }
+                }
+              },
+              "courseGroups" : {
+                "required" : [ "href" ],
+                "type" : "object",
+                "properties" : {
+                  "href" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "/v3/course-groups?faculty=123"
+                  }
+                },
+                "description" : "Link to the list of course groups of this faculty"
+              },
+              "courses" : {
+                "required" : [ "href" ],
+                "type" : "object",
+                "properties" : {
+                  "href" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "/v3/courses?faculty=123"
+                  }
+                },
+                "description" : "Link to the list of courses for this faculty"
+              }
+            }
+          }
+        }
+      },
+      "EducationalDepartment" : {
+        "required" : [ "_links", "educationalDepartmentId", "name" ],
+        "type" : "object",
+        "properties" : {
+          "educationalDepartmentId" : {
+            "type" : "string",
+            "description" : "Unique id for this educational department"
+          },
+          "name" : {
+            "type" : "string",
+            "description" : "The name of this educational department"
+          },
+          "description" : {
+            "type" : "string",
+            "description" : "The description of this educational department"
+          },
+          "_links" : {
+            "required" : [ "self" ],
+            "type" : "object",
+            "properties" : {
+              "self" : {
+                "required" : [ "href" ],
+                "type" : "object",
+                "properties" : {
+                  "href" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "/v3/educational-departments/123"
+                  }
+                },
+                "description" : "Link to current resource"
+              },
+              "educationalPlans" : {
+                "type" : "array",
+                "description" : "Links to the educational plans for this educational department",
+                "items" : {
+                  "required" : [ "href", "title" ],
+                  "type" : "object",
+                  "properties" : {
+                    "href" : {
+                      "type" : "string",
+                      "format" : "uri",
+                      "example" : "/v3/educational-plans/123"
+                    },
+                    "title" : {
+                      "type" : "string",
+                      "description" : "The name of the educational plan"
+                    }
+                  }
+                }
+              },
+              "courseGroups" : {
+                "required" : [ "href" ],
+                "type" : "object",
+                "properties" : {
+                  "href" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "/v3/course-groups?educationalDepartment=123"
+                  }
+                },
+                "description" : "Link to list of course groups for this educational department"
+              },
+              "courses" : {
+                "required" : [ "href" ],
+                "type" : "object",
+                "properties" : {
+                  "href" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "/v3/courses?educationalDepartment=123"
+                  }
+                },
+                "description" : "Link to the list of courses for this educational department"
+              }
+            }
+          }
+        }
+      },
+      "EducationalPlan" : {
+        "required" : [ "_links", "educationalPlanId", "name", "termStartDate" ],
+        "type" : "object",
+        "properties" : {
+          "educationalPlanId" : {
+            "type" : "string",
+            "description" : "Unique id for this educational plan"
+          },
+          "name" : {
+            "type" : "string",
+            "description" : "The name of this educational plan"
+          },
+          "description" : {
+            "type" : "string",
+            "description" : "The description of this educational plan"
+          },
+          "termStartDate" : {
+            "type" : "string",
+            "description" : "The day on which this educational plan starts, RFC3339 (full-date)",
+            "format" : "date"
+          },
+          "termEndDate" : {
+            "type" : "string",
+            "description" : "The day on which this educational plan ends, RFC3339 (full-date)",
+            "format" : "date"
+          },
+          "ects" : {
+            "minimum" : 0,
+            "type" : "integer",
+            "description" : "The number of EC's that can be archieved in this educational plan",
+            "format" : "int32"
+          },
+          "earnedEcts" : {
+            "minimum" : 0,
+            "type" : "integer",
+            "description" : "The number of EC's that is earned in this education plan",
+            "format" : "int32"
+          },
+          "mainLanguage" : {
+            "type" : "string",
+            "description" : "The main language in which the courses within this education plan are given, RFC3066",
+            "example" : "nl-NL"
+          },
+          "_links" : {
+            "required" : [ "self" ],
+            "type" : "object",
+            "properties" : {
+              "self" : {
+                "required" : [ "href" ],
+                "type" : "object",
+                "properties" : {
+                  "href" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "/v3/educational-plans/123"
+                  }
+                },
+                "description" : "Link to current resource"
+              },
+              "courseGroups" : {
+                "required" : [ "href" ],
+                "type" : "object",
+                "properties" : {
+                  "href" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "/v3/course-groups?educationalPlan=123"
+                  }
+                },
+                "description" : "Link to the list of course groups for this educational plan"
+              },
+              "courses" : {
+                "required" : [ "href" ],
+                "type" : "object",
+                "properties" : {
+                  "href" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "/v3/courses?educationalPlan=123"
+                  }
+                },
+                "description" : "Link to the list of courses for this educational plan"
+              }
+            }
+          }
+        }
+      },
+      "EducationalProgramme" : {
+        "required" : [ "_links", "educationalProgrammeId", "name", "termStartDate" ],
+        "type" : "object",
+        "properties" : {
+          "educationalProgrammeId" : {
+            "type" : "string",
+            "description" : "Unique id for this educational programme"
+          },
+          "name" : {
+            "type" : "string",
+            "description" : "The name of this educational programme"
+          },
+          "description" : {
+            "type" : "string",
+            "description" : "The description of this educational programme"
+          },
+          "termStartDate" : {
+            "type" : "string",
+            "description" : "The day on which this educational programme starts, RFC3339 (full-date)",
+            "format" : "date"
+          },
+          "termEndDate" : {
+            "type" : "string",
+            "description" : "The day on which this educational programme ends, RFC3339 (full-date)",
+            "format" : "date"
+          },
+          "ects" : {
+            "minimum" : 0,
+            "type" : "number",
+            "description" : "The number of EC's that can be archieved in this educational plan",
+            "format" : "int32"
+          },
+          "mainLanguage" : {
+            "type" : "string",
+            "description" : "The main language in which the courses within this education plan are given, RFC3066",
+            "example" : "nl-NL"
+          },
+          "qualificationAwarded" : {
+            "type" : "string",
+            "description" : "Type of qualificaton that can be obtained on finishing the programme",
+            "example" : "Bachelor of Arts, or Bachelor of Nursing"
+          },
+          "lenghtOfProgramme" : {
+            "type" : "number",
+            "description" : "The lenght of the programme specified in months"
+          },
+          "levelOfQualification" : {
+            "type" : "string",
+            "description" : "Level of qualification according to the National Qualification Framework and the European Qualifications Framework",
+            "example" : "E.g. Bachelor’s degree; EQF for LLL level 6; NLQF level 6"
+          },
+          "fieldsOfStudy" : {
+            "type" : "string",
+            "description" : "Field(s) of study (e.g. ISCED-F) (http://uis.unesco.org/sites/default/files/documents/isced-fields-of-education-and-training-2013-en.pdf_.",
+            "example" : "e.g. 0732 Building and civil engineering"
+          },
+          "profileOfProgramme" : {
+            "type" : "string",
+            "description" : "brief description of the main focus of the programme."
+          },
+          "programmeLearningOutcomes" : {
+            "type" : "string",
+            "description" : "List the learning outcomes at programme level. It is advisable to limit the number of learning outcomes to approximately 20. It is also advisable to make sure that the programme learning outcomes in the course catalogue correspond with those on the Diploma Supplement."
+          },
+          "modeOfStudy" : {
+            "type" : "string",
+            "description" : "Indicate whether the programme is e.g. full-time, part-time, dual, e-learning.",
+            "example" : "full-time, part-time, dual, e-learning."
+          },
+          "_links" : {
+            "required" : [ "self" ],
+            "type" : "object",
+            "properties" : {
+              "self" : {
+                "required" : [ "href" ],
+                "type" : "object",
+                "properties" : {
+                  "href" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "/v3/educational-programmes/123"
+                  }
+                },
+                "description" : "Link to current resource"
+              },
+              "courses" : {
+                "required" : [ "href" ],
+                "type" : "object",
+                "properties" : {
+                  "href" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "/v3/courses?educationalPprogramme=123"
+                  }
+                },
+                "description" : "Link to the list of courses for this educational programme"
+              }
+            }
+          }
+        }
+      },
+      "CourseGroup" : {
+        "required" : [ "_links", "courseGroupId", "name", "type" ],
+        "type" : "object",
+        "properties" : {
+          "courseGroupId" : {
+            "type" : "string",
+            "description" : "Unique id of this course group"
+          },
+          "name" : {
+            "type" : "string",
+            "description" : "The name of this course group"
+          },
+          "studyYear" : {
+            "type" : "string",
+            "description" : "The year in which this course group was created"
+          },
+          "description" : {
+            "type" : "string",
+            "description" : "The description of this course group"
+          },
+          "type" : {
+            "type" : "string",
+            "description" : "The type of course group (e.g. minor, module, specialization, etc.)"
+          },
+          "ects" : {
+            "minimum" : 0,
+            "type" : "integer",
+            "description" : "The number of EC's that can be archieved in this course group",
+            "format" : "int32"
+          },
+          "earnedEcts" : {
+            "minimum" : 0,
+            "type" : "integer",
+            "description" : "The number of EC's that is earned in this course group",
+            "format" : "int32"
+          },
+          "_links" : {
+            "required" : [ "self" ],
+            "type" : "object",
+            "properties" : {
+              "self" : {
+                "required" : [ "href" ],
+                "type" : "object",
+                "properties" : {
+                  "href" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "/v3/course-groups/123"
+                  }
+                },
+                "description" : "Link to current resource"
+              },
+              "courses" : {
+                "type" : "array",
+                "description" : "Links to the courses affiliated to this course group",
+                "items" : {
+                  "required" : [ "href", "title" ],
+                  "type" : "object",
+                  "properties" : {
+                    "href" : {
+                      "type" : "string",
+                      "format" : "uri",
+                      "example" : "/v3/courses/123"
+                    },
+                    "title" : {
+                      "type" : "string",
+                      "description" : "The name of the course"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "Course" : {
+        "required" : [ "_links", "courseId", "description", "mainLanguage", "name" ],
+        "type" : "object",
+        "properties" : {
+          "courseId" : {
+            "type" : "string",
+            "description" : "Unique id of this course"
+          },
+          "name" : {
+            "type" : "string",
+            "description" : "The name of this course (ECTS-Title)"
+          },
+          "abbreviation" : {
+            "type" : "string",
+            "description" : "The abbreviation or internal code used to identify this course (ECTS-code)"
+          },
+          "ects" : {
+            "minimum" : 0,
+            "type" : "integer",
+            "description" : "The number of EC's that is earned when the course is completed successfully (ECTS-ects)",
+            "format" : "int32"
+          },
+          "description" : {
+            "type" : "string",
+            "description" : "The description of this course (ECTS-description)"
+          },
+          "learningOutcomes" : {
+            "type" : "string",
+            "description" : "Statements that describe the knowledge or skills students should acquire by the end of a particular course (ECTS-learningoutcome)"
+          },
+          "goals" : {
+            "type" : "string",
+            "description" : "The description of the main goal of this course"
+          },
+          "requirements" : {
+            "type" : "string",
+            "description" : "The requirements needed to enter this course (ECTS-prerequisites)"
+          },
+          "level" : {
+            "type" : "string",
+            "description" : "The level of this course (see service metadata for possible values) (ECTS-year of study if applicable)"
+          },
+          "format" : {
+            "type" : "array",
+            "description" : "The format in which this course is given (ECTS-format) (mutlivalue)",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "modeOfDelivery" : {
+            "type" : "string",
+            "description" : "information on the mode of delivery of the component, e.g. via e-learning, face-to-face, etc. (ECTS-Mode of delivery)"
+          },
+          "mainLanguage" : {
+            "type" : "string",
+            "description" : "The main language in which this course is given, RFC3066 (ECTS-language of instriction)",
+            "example" : "nl-NL"
+          },
+          "enrollment" : {
+            "type" : "string",
+            "description" : "The extra information that is provided for enrollment"
+          },
+          "resources" : {
+            "type" : "string",
+            "description" : "An overview of the literature and other resources that is used in this course (ECTS-recommended reading and other sources)"
+          },
+          "exams" : {
+            "type" : "string",
+            "description" : "A description of the way exams for this course are taken  (ECTS-assessment method and criteria)"
+          },
+          "schedule" : {
+            "type" : "string",
+            "description" : "A description of the timeframes, when this course takes place (ECTS-Semester/trimester when the component is delivered)"
+          },
+          "link" : {
+            "type" : "string",
+            "description" : "The url containing the address of the website with more information about the course",
+            "format" : "uri"
+          },
+          "_links" : {
+            "required" : [ "self" ],
+            "type" : "object",
+            "properties" : {
+              "self" : {
+                "required" : [ "href" ],
+                "type" : "object",
+                "properties" : {
+                  "href" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "/v3/courses/123"
+                  }
+                },
+                "description" : "Link to current resource"
+              },
+              "courseOfferings" : {
+                "required" : [ "href" ],
+                "type" : "object",
+                "properties" : {
+                  "href" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "/v3/coureOfferings?course=123"
+                  }
+                },
+                "description" : "Link to the list of courseOfferings for this course"
+              },
+              "coordinator" : {
+                "required" : [ "href" ],
+                "type" : "object",
+                "properties" : {
+                  "href" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "/v3/persons/123"
+                  },
+                  "title" : {
+                    "type" : "string",
+                    "description" : "The display name of the person"
+                  }
+                },
+                "description" : "Link to the coordinator (person) that is responsible, and can be contacted for this course"
+              },
+              "lecturers" : {
+                "type" : "array",
+                "description" : "Links to the lecturers (persons) of this course (ECTS-lecturers)",
+                "items" : {
+                  "required" : [ "href", "title" ],
+                  "type" : "object",
+                  "properties" : {
+                    "href" : {
+                      "type" : "string",
+                      "format" : "uri",
+                      "example" : "/v3/persons/123"
+                    },
+                    "title" : {
+                      "type" : "string",
+                      "description" : "The display name of the person"
+                    }
+                  }
+                }
+              },
+              "courseResults" : {
+                "required" : [ "href" ],
+                "type" : "object",
+                "properties" : {
+                  "href" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "/v3/course-results?course=123"
+                  }
+                },
+                "description" : "Link to the course results for this course"
+              },
+              "testResults" : {
+                "required" : [ "href" ],
+                "type" : "object",
+                "properties" : {
+                  "href" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "/v3/test-results?course=123"
+                  }
+                },
+                "description" : "Link to the test results for this course"
+              },
+              "faculties" : {
+                "type" : "array",
+                "description" : "Links to the faculties where this course is given",
+                "items" : {
+                  "required" : [ "href", "title" ],
+                  "type" : "object",
+                  "properties" : {
+                    "href" : {
+                      "type" : "string",
+                      "format" : "uri",
+                      "example" : "/v3/faculties/123"
+                    },
+                    "title" : {
+                      "type" : "string",
+                      "description" : "The name of the faculty"
+                    }
+                  }
+                }
+              },
+              "educationalDepartments" : {
+                "type" : "array",
+                "description" : "Links to the educational departments where this course is given",
+                "items" : {
+                  "required" : [ "href", "title" ],
+                  "type" : "object",
+                  "properties" : {
+                    "href" : {
+                      "type" : "string",
+                      "format" : "uri",
+                      "example" : "/v3/educationalDepartments/123"
+                    },
+                    "title" : {
+                      "type" : "string",
+                      "description" : "The name of the educational department"
+                    }
+                  }
+                }
+              },
+              "educationalPlans" : {
+                "type" : "array",
+                "description" : "Links to the educational plans where this course is part of",
+                "items" : {
+                  "required" : [ "href", "title" ],
+                  "type" : "object",
+                  "properties" : {
+                    "href" : {
+                      "type" : "string",
+                      "format" : "uri",
+                      "example" : "/v3/educationalPlans/123"
+                    },
+                    "title" : {
+                      "type" : "string",
+                      "description" : "The name of the educational plan"
+                    }
+                  }
+                }
+              },
+              "educationalProgrammes" : {
+                "type" : "array",
+                "description" : "Links to the educational programmes where this course is part of",
+                "items" : {
+                  "required" : [ "href", "title" ],
+                  "type" : "object",
+                  "properties" : {
+                    "href" : {
+                      "type" : "string",
+                      "format" : "uri",
+                      "example" : "/v3/educationalProgrammes/123"
+                    },
+                    "title" : {
+                      "type" : "string",
+                      "description" : "The name of the educational programme"
+                    }
+                  }
+                }
+              },
+              "courseGroup" : {
+                "type" : "array",
+                "description" : "Links to the course groups where this course is part of",
+                "items" : {
+                  "required" : [ "href", "title" ],
+                  "type" : "object",
+                  "properties" : {
+                    "href" : {
+                      "type" : "string",
+                      "format" : "uri",
+                      "example" : "/v3/courseGroups/123"
+                    },
+                    "title" : {
+                      "type" : "string",
+                      "description" : "The name of the course group"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "CourseOffering" : {
+        "required" : [ "academicYear", "course", "courseOfferingId", "period" ],
+        "type" : "object",
+        "properties" : {
+          "courseOfferingId" : {
+            "type" : "string",
+            "description" : "Unique id of this course offering"
+          },
+          "course" : {
+            "type" : "object",
+            "description" : "The course object of which this courseOffering is an instance"
+          },
+          "maxNumberStudents" : {
+            "minimum" : 0,
+            "type" : "number",
+            "description" : "The maximum number of students allowd to enroll for this course offering",
+            "format" : "int32"
+          },
+          "currentNumberStudents" : {
+            "minimum" : 0,
+            "type" : "number",
+            "description" : "The number of students that have already enrolled for this course offering",
+            "format" : "int32"
+          },
+          "academicYear" : {
+            "type" : "string",
+            "description" : "The year in which this courseOffering takes place"
+          },
+          "period" : {
+            "type" : "string",
+            "description" : "The period in which this courseOffering is offered"
+          },
+          "_links" : {
+            "required" : [ "self" ],
+            "type" : "object",
+            "properties" : {
+              "self" : {
+                "required" : [ "href" ],
+                "type" : "object",
+                "properties" : {
+                  "href" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "/v3/course-offerings/123"
+                  }
+                },
+                "description" : "Link to current resource"
+              },
+              "lecturers" : {
+                "type" : "array",
+                "description" : "Links to the lecturers (persons) that are responsible for this course (ECTS)",
+                "items" : {
+                  "required" : [ "href", "title" ],
+                  "type" : "object",
+                  "properties" : {
+                    "href" : {
+                      "type" : "string",
+                      "format" : "uri",
+                      "example" : "/v3/persons/123"
+                    },
+                    "title" : {
+                      "type" : "string",
+                      "description" : "The display name of the person"
+                    }
+                  }
+                }
+              },
+              "schedules" : {
+                "required" : [ "href" ],
+                "type" : "object",
+                "properties" : {
+                  "href" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "/v3/schedules?courseOffering=123"
+                  }
+                },
+                "description" : "Link to the list of schedules for this course"
+              }
+            }
+          }
+        }
+      },
+      "CourseResult" : {
+        "required" : [ "_links", "academicYear", "courseResultId", "passed", "resultDate" ],
+        "type" : "object",
+        "properties" : {
+          "courseResultId" : {
+            "type" : "string",
+            "description" : "Unique id of this course result"
+          },
+          "passed" : {
+            "type" : "boolean",
+            "description" : "Boolean, representing whether the student did or did not pass the course"
+          },
+          "grade" : {
+            "type" : "string",
+            "description" : "The average of the test results"
+          },
+          "comment" : {
+            "type" : "string",
+            "description" : "The comment on the result for the course"
+          },
+          "resultDate" : {
+            "type" : "string",
+            "description" : "The date this result has been published, RFC3339 (full-date)",
+            "format" : "date"
+          },
+          "academicYear" : {
+            "pattern" : "^\\d{4}-\\d{4}$",
+            "type" : "string",
+            "description" : "The academic year this result has been achieved in (e.g. `2017-2018`)"
+          },
+          "_links" : {
+            "required" : [ "self" ],
+            "type" : "object",
+            "properties" : {
+              "self" : {
+                "required" : [ "href" ],
+                "type" : "object",
+                "properties" : {
+                  "href" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "/v3/course-results/123"
+                  }
+                },
+                "description" : "Link to current resource"
+              },
+              "course" : {
+                "required" : [ "href", "title" ],
+                "type" : "object",
+                "properties" : {
+                  "href" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "/v3/courses/123"
+                  },
+                  "title" : {
+                    "type" : "string",
+                    "description" : "The name of the course"
+                  }
+                },
+                "description" : "Link to the course for this result"
+              },
+              "student" : {
+                "required" : [ "href", "title" ],
+                "type" : "object",
+                "properties" : {
+                  "href" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "/v3/persons/123"
+                  },
+                  "title" : {
+                    "type" : "string",
+                    "description" : "The display name of the person"
+                  }
+                },
+                "description" : "Link to the student (person) for this result"
+              },
+              "testResults" : {
+                "required" : [ "href" ],
+                "type" : "object",
+                "properties" : {
+                  "href" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "/v3/test-results?course=123&student=123"
+                  }
+                },
+                "description" : "Link to the list of test results of the tests made by the student for this course"
+              }
+            }
+          }
+        }
+      },
+      "TestResult" : {
+        "required" : [ "_links", "comment", "description", "grade", "passed", "testDate", "testResultId" ],
+        "type" : "object",
+        "properties" : {
+          "testResultId" : {
+            "type" : "string",
+            "description" : "Unique id of this test result"
+          },
+          "description" : {
+            "type" : "string",
+            "description" : "The general description for the test result"
+          },
+          "assessmentType" : {
+            "type" : "string",
+            "description" : "The form of assessment"
+          },
+          "testDate" : {
+            "type" : "string",
+            "description" : "The day on which the test was made, RFC3339 (full-date)",
+            "format" : "date"
+          },
+          "grade" : {
+            "type" : "string",
+            "description" : "The result for the test, last made"
+          },
+          "comment" : {
+            "type" : "string",
+            "description" : "The comment on the result for this test"
+          },
+          "passed" : {
+            "type" : "boolean",
+            "description" : "Boolean, representing whether the student did or did not pass the test"
+          },
+          "weight" : {
+            "maximum" : 100,
+            "minimum" : 0,
+            "type" : "integer",
+            "description" : "The weight to 100 as total for this test result in the course result",
+            "format" : "int32"
+          },
+          "_links" : {
+            "required" : [ "self" ],
+            "type" : "object",
+            "properties" : {
+              "self" : {
+                "required" : [ "href" ],
+                "type" : "object",
+                "properties" : {
+                  "href" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "/v3/test-results/123"
+                  }
+                },
+                "description" : "Link to current resource"
+              },
+              "course" : {
+                "required" : [ "href", "title" ],
+                "type" : "object",
+                "properties" : {
+                  "href" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "/v3/courses/123"
+                  },
+                  "title" : {
+                    "type" : "string",
+                    "description" : "The name of the course"
+                  }
+                },
+                "description" : "Link to the course for this test result"
+              },
+              "student" : {
+                "required" : [ "href", "title" ],
+                "type" : "object",
+                "properties" : {
+                  "href" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "/v3/persons/123"
+                  },
+                  "title" : {
+                    "type" : "string",
+                    "description" : "The display name of the person"
+                  }
+                },
+                "description" : "Link to the student (person) for this result"
+              },
+              "lecturers" : {
+                "type" : "array",
+                "description" : "Links to the lecturers (persons) who are responsible for this test",
+                "items" : {
+                  "required" : [ "href", "title" ],
+                  "type" : "object",
+                  "properties" : {
+                    "href" : {
+                      "type" : "string",
+                      "format" : "uri",
+                      "example" : "/v3/persons/123"
+                    },
+                    "title" : {
+                      "type" : "string",
+                      "description" : "The display name of the person"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "Building" : {
+        "required" : [ "_links", "abbreviation", "buildingId", "city", "name" ],
+        "type" : "object",
+        "properties" : {
+          "buildingId" : {
+            "type" : "string",
+            "description" : "Unique id of this building"
+          },
+          "abbreviation" : {
+            "type" : "string",
+            "description" : "The abbreviation of the name of this building"
+          },
+          "name" : {
+            "type" : "string",
+            "description" : "The name of this building"
+          },
+          "description" : {
+            "type" : "string",
+            "description" : "The description of this building"
+          },
+          "address" : {
+            "type" : "string",
+            "description" : "The streetname and number + appendix of the physical location of this building"
+          },
+          "postalCode" : {
+            "pattern" : "^[1-9][0-9]{3}[A-Z]{2}$",
+            "type" : "string",
+            "description" : "The zipcode of the physical location of this building"
+          },
+          "city" : {
+            "type" : "string",
+            "description" : "The city in which this building is located"
+          },
+          "lat" : {
+            "type" : "number",
+            "description" : "The latitude of this building",
+            "format" : "double"
+          },
+          "lon" : {
+            "type" : "number",
+            "description" : "The longitude this building",
+            "format" : "double"
+          },
+          "_links" : {
+            "required" : [ "self" ],
+            "type" : "object",
+            "properties" : {
+              "self" : {
+                "required" : [ "href" ],
+                "type" : "object",
+                "properties" : {
+                  "href" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "/v3/buildings/123"
+                  }
+                },
+                "description" : "Link to current resource"
+              },
+              "rooms" : {
+                "required" : [ "href" ],
+                "type" : "object",
+                "properties" : {
+                  "href" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "/v3/rooms?building=123"
+                  }
+                },
+                "description" : "Link to the list of all rooms in this building"
+              }
+            }
+          }
+        }
+      },
+      "Room" : {
+        "required" : [ "_links", "abbreviation", "name", "roomId" ],
+        "type" : "object",
+        "properties" : {
+          "roomId" : {
+            "type" : "string",
+            "description" : "Unique id for this room"
+          },
+          "abbreviation" : {
+            "type" : "string",
+            "description" : "The abbreviation of the name of this room"
+          },
+          "name" : {
+            "type" : "string",
+            "description" : "The name of this room"
+          },
+          "type" : {
+            "type" : "string",
+            "description" : "The type of this room (see service metadata for possible values)"
+          },
+          "description" : {
+            "type" : "string",
+            "description" : "The description of this room"
+          },
+          "totalSeats" : {
+            "type" : "integer",
+            "description" : "The total number of seats located in the room",
+            "format" : "int32"
+          },
+          "totalWorkspaces" : {
+            "type" : "integer",
+            "description" : "The total number of workspaces located in the room",
+            "format" : "int32"
+          },
+          "availableWorkspaces" : {
+            "type" : "integer",
+            "description" : "The total number of available (=non-reserved) workspaces in the room",
+            "format" : "int32"
+          },
+          "_links" : {
+            "required" : [ "self" ],
+            "type" : "object",
+            "properties" : {
+              "self" : {
+                "required" : [ "href" ],
+                "type" : "object",
+                "properties" : {
+                  "href" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "/v3/rooms/123"
+                  }
+                },
+                "description" : "Link to current resource"
+              },
+              "building" : {
+                "required" : [ "href", "title" ],
+                "type" : "object",
+                "properties" : {
+                  "href" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "/v3/buildings/123"
+                  },
+                  "title" : {
+                    "type" : "string",
+                    "description" : "The name of the building"
+                  }
+                },
+                "description" : "Link to the building in which the room is located"
+              }
+            }
+          }
+        }
+      },
+      "Schedule" : {
+        "required" : [ "_links", "endDateTime", "scheduleId", "startDateTime" ],
+        "type" : "object",
+        "properties" : {
+          "scheduleId" : {
+            "type" : "string",
+            "description" : "Unique id of this schedule"
+          },
+          "startDateTime" : {
+            "type" : "string",
+            "description" : "The moment on which this schedule starts, RFC3339 (date-time)",
+            "format" : "date-time"
+          },
+          "endDateTime" : {
+            "type" : "string",
+            "description" : "The moment on which this schedule ends, RFC3339 (date-time)",
+            "format" : "date-time"
+          },
+          "description" : {
+            "type" : "string",
+            "description" : "The description of this schedule"
+          },
+          "_links" : {
+            "required" : [ "self" ],
+            "type" : "object",
+            "properties" : {
+              "self" : {
+                "required" : [ "href" ],
+                "type" : "object",
+                "properties" : {
+                  "href" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "/v3/schedules/123"
+                  }
+                },
+                "description" : "Link to current resource"
+              },
+              "courseOfferings" : {
+                "type" : "array",
+                "description" : "Links to the coursOfferings affiliated to this schedule",
+                "items" : {
+                  "required" : [ "href", "title" ],
+                  "type" : "object",
+                  "properties" : {
+                    "href" : {
+                      "type" : "string",
+                      "format" : "uri",
+                      "example" : "/v3/course-offerings/123"
+                    },
+                    "title" : {
+                      "type" : "string",
+                      "description" : "The name of the course offering"
+                    }
+                  }
+                }
+              },
+              "tests" : {
+                "type" : "array",
+                "description" : "Links to the tests affiliated to this schedule",
+                "items" : {
+                  "required" : [ "href", "title" ],
+                  "type" : "object",
+                  "properties" : {
+                    "href" : {
+                      "type" : "string",
+                      "format" : "uri",
+                      "example" : "/v3/tests/123"
+                    },
+                    "title" : {
+                      "type" : "string",
+                      "description" : "The name of the test"
+                    }
+                  }
+                }
+              },
+              "rooms" : {
+                "type" : "array",
+                "description" : "Links to the room(s) of this schedule",
+                "items" : {
+                  "required" : [ "href", "title" ],
+                  "type" : "object",
+                  "properties" : {
+                    "href" : {
+                      "type" : "string",
+                      "format" : "uri",
+                      "example" : "/v3/rooms/123"
+                    },
+                    "title" : {
+                      "type" : "string",
+                      "description" : "The name of the room"
+                    }
+                  }
+                }
+              },
+              "lecturers" : {
+                "type" : "array",
+                "description" : "Links to the lecturers (persons) of this schedule",
+                "items" : {
+                  "required" : [ "href", "title" ],
+                  "type" : "object",
+                  "properties" : {
+                    "href" : {
+                      "type" : "string",
+                      "format" : "uri",
+                      "example" : "/v3/persons/123"
+                    },
+                    "title" : {
+                      "type" : "string",
+                      "description" : "The name of the person"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "Test" : {
+        "required" : [ "_links", "name", "testId" ],
+        "type" : "object",
+        "properties" : {
+          "testId" : {
+            "type" : "string",
+            "description" : "Unique id for this test"
+          },
+          "name" : {
+            "type" : "string",
+            "description" : "The name of this test"
+          },
+          "description" : {
+            "type" : "string",
+            "description" : "The description of this test"
+          },
+          "_links" : {
+            "required" : [ "self" ],
+            "type" : "object",
+            "properties" : {
+              "self" : {
+                "required" : [ "href" ],
+                "type" : "object",
+                "properties" : {
+                  "href" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "/v3/tests/123"
+                  }
+                },
+                "description" : "Link to current resource"
+              },
+              "courses" : {
+                "required" : [ "href" ],
+                "type" : "object",
+                "properties" : {
+                  "href" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "/v3/courses/123"
+                  }
+                },
+                "description" : "Link to the course for wihch this test is created"
+              }
+            }
+          }
+        }
+      },
+      "NewsFeed" : {
+        "required" : [ "_links", "newsFeedId", "title" ],
+        "type" : "object",
+        "properties" : {
+          "newsFeedId" : {
+            "type" : "string",
+            "description" : "Unique id for this news feed"
+          },
+          "title" : {
+            "type" : "string",
+            "description" : "The title for this news feed"
+          },
+          "description" : {
+            "type" : "string",
+            "description" : "The description of this news feed"
+          },
+          "_links" : {
+            "required" : [ "self" ],
+            "type" : "object",
+            "properties" : {
+              "self" : {
+                "required" : [ "href" ],
+                "type" : "object",
+                "properties" : {
+                  "href" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "/v3/news-feeds/123"
+                  }
+                },
+                "description" : "Link to current resource"
+              },
+              "newsItems" : {
+                "required" : [ "href" ],
+                "type" : "object",
+                "properties" : {
+                  "href" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "/v3/news-items?newsFeed=123"
+                  }
+                },
+                "description" : "Links to the list of news items, that are part of this news feed"
+              }
+            }
+          }
+        }
+      },
+      "NewsItem" : {
+        "required" : [ "_links", "content", "lastModified", "newsItemId", "publishDate", "title" ],
+        "type" : "object",
+        "properties" : {
+          "newsItemId" : {
+            "type" : "string",
+            "description" : "Unique id for this news item"
+          },
+          "title" : {
+            "type" : "string",
+            "description" : "The title for this news item"
+          },
+          "authors" : {
+            "type" : "array",
+            "description" : "The authors of the article with this news item",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "image" : {
+            "type" : "string",
+            "description" : "The url containing the address of the image belonging to this news item",
+            "format" : "uri"
+          },
+          "link" : {
+            "type" : "string",
+            "description" : "The url containing the address of the article belonging to this news item",
+            "format" : "uri"
+          },
+          "content" : {
+            "type" : "string",
+            "description" : "The content of this news item"
+          },
+          "publishDateTime" : {
+            "type" : "string",
+            "description" : "The moment on which this news item was published, RFC3339 (date-time)",
+            "format" : "date-time"
+          },
+          "lastModified" : {
+            "type" : "string",
+            "description" : "The moment on which this news item was updated, RFC3339 (date-time)",
+            "format" : "date-time"
+          },
+          "_links" : {
+            "required" : [ "self" ],
+            "type" : "object",
+            "properties" : {
+              "self" : {
+                "required" : [ "href" ],
+                "type" : "object",
+                "properties" : {
+                  "href" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "/v3/news-items/123"
+                  }
+                },
+                "description" : "Link to current resource"
+              },
+              "newsFeeds" : {
+                "type" : "array",
+                "description" : "Links to the news feeds where this news item is aggregated",
+                "items" : {
+                  "required" : [ "href", "title" ],
+                  "type" : "object",
+                  "properties" : {
+                    "href" : {
+                      "type" : "string",
+                      "format" : "uri",
+                      "example" : "/v3/news-feeds/123"
+                    },
+                    "title" : {
+                      "type" : "string",
+                      "description" : "The name of the news feed"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

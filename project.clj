@@ -5,5 +5,7 @@
             :url "https://www.eclipse.org/legal/epl-2.0/"}
   :dependencies [[org.clojure/clojure "1.10.0" :scope "provided"]
                  [com.atlassian.oai/swagger-request-validator-core "2.8.3"]]
-  :repl-options {:init-ns nl.zeekat.swagger-validator})
+  :repl-options {:init-ns nl.zeekat.ring-swagger-validator}
+  :profiles {:dev {:dependencies [[org.clojure/data.json "0.2.7"]]
+                   :resource-paths ["dev-resources"]}})
 

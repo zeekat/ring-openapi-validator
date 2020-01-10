@@ -115,7 +115,7 @@
   (report->coll (.validateRequest validator (ring->Request request))))
 
 (defn validate-response
-  [validator path method response]
+  [validator method path response]
   (report->coll (.validateResponse validator path (ring->Method method) (ring->Response response))))
 
 (defn openapi-validator
