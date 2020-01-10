@@ -1,7 +1,6 @@
-(ns nl.zeekat.ring-swagger-validator
+(ns nl.zeekat.ring-openapi-validator
   (:require [clojure.string :as string])
   (:import com.atlassian.oai.validator.OpenApiInteractionValidator
-           com.atlassian.oai.validator.SwaggerRequestResponseValidator
            com.atlassian.oai.validator.model.Request
            com.atlassian.oai.validator.model.Request$Method
            com.atlassian.oai.validator.model.Response
@@ -126,11 +125,4 @@
     true
     (.build)))
 
-(defn swagger-validator
-  [spec {:keys [base-path]}]
-  (cond-> (SwaggerRequestResponseValidator/createFor spec)
-    base-path
-    (.withBasePathOverride base-path)
-    true
-    (.build)))
 

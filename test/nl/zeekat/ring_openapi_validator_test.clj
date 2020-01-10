@@ -1,5 +1,5 @@
-(ns nl.zeekat.ring-swagger-validator-test
-  (:require [nl.zeekat.ring-swagger-validator :as validator]
+(ns nl.zeekat.ring-openapi-validator-test
+  (:require [nl.zeekat.ring-openapi-validator :as validator]
             [clojure.test :refer [deftest testing is]]
             [clojure.data.json :as json]))
 
