@@ -116,8 +116,7 @@
 
   If you need to customize the validator you can create a builder using
   `com.atlassian.oai.validator.OpenApiInteractionValidator/createFor`"
-  ^{:arglists ([spec opts*])}
-  ([spec {:keys [base-path]}]
+  ([spec {:keys [base-path] :as opts}]
    (cond-> (OpenApiInteractionValidator/createFor spec)
      base-path
      (.withBasePathOverride base-path)
