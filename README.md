@@ -1,14 +1,24 @@
-# swagger-validator
+# ring-openapi-validator
 
-A Clojure library designed to ... well, that part is up to you.
+Validate ring requests and responses against Swagger v2 / OpenAPI v3
+specifications. Uses [Atlassian's Swagger Request
+Validator](https://bitbucket.org/atlassian/swagger-request-validator/src/master/)
+to do the actual validation.
 
 ## Usage
 
-FIXME
+      (require '[nl.zeekat.ring-openapi-validator :as validator])
+      
+      (def validator (validator/openapi-validator "path/to/spec.json"))
+      
+      (when-let [issues (validator/validate-interaction validator
+                                                        ring-request ring-response)]
+        (doseq [issue issues]
+          (prn issue)))
 
 ## License
 
-Copyright © 2020 FIXME
+Copyright © 2020 Zeekat Software Ontwikkeling
 
 This program and the accompanying materials are made available under the
 terms of the Eclipse Public License 2.0 which is available at

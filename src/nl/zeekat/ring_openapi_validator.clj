@@ -105,24 +105,47 @@
     (when (seq coll)
       coll)))
 
+(defn openapi-validator
+  "Build an OpenApiInteractionValidator from a spec
+
+  `spec` is a url or path to resource describing a Swagger or OpenApi
+  specification.
+
+  `opts` is an optional map of options:
+   - `:base-path` overrides the base path in the spec.
+
+  If you need to customize the validator you can create a builder using
+  `com.atlassian.oai.validator.OpenApiInteractionValidator/createFor`"
+  ^{:arglists ([spec opts*])}
+  ([spec {:keys [base-path]}]
+   (cond-> (OpenApiInteractionValidator/createFor spec)
+     base-path
+     (.withBasePathOverride base-path)
+     true
+     (.build)))
+  ([spec]
+   (openapi-validator spec {})))
+
 (defn validate-interaction
+  "Validate a `request`/`response` pair using the given `validator`.
+  
+  If any issues are found, returns a report collection"
   [validator request response]
   (report->coll (.validate validator (ring->Request request) (ring->Response response))))
 
 (defn validate-request
+  "Validate a `request` using the given `validator`.
+
+  If any issues are found, returns a report collection"
   [validator request]
   (report->coll (.validateRequest validator (ring->Request request))))
 
 (defn validate-response
+  "Validate a `response` using the given `validator`.
+
+  - `method` is a ring-spec method: `:get` `:head` `:post` etc...
+  - `path` is the request path excluding parameters
+
+  If any issues are found, returns a report collection"
   [validator method path response]
   (report->coll (.validateResponse validator path (ring->Method method) (ring->Response response))))
-
-(defn openapi-validator
-  [spec {:keys [base-path]}]
-  (cond-> (OpenApiInteractionValidator/createFor spec)
-    base-path
-    (.withBasePathOverride base-path)
-    true
-    (.build)))
-
-
