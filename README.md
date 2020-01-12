@@ -5,6 +5,10 @@ specifications. Uses [Atlassian's Swagger Request
 Validator](https://bitbucket.org/atlassian/swagger-request-validator/src/master/)
 to do the actual validation.
 
+## Dependency coordinates
+
+    [nl.zeekat/ring-openapi-validator "0.1.0"]
+
 ## Usage
 
       (require '[nl.zeekat.ring-openapi-validator :as validator])

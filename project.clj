@@ -6,6 +6,9 @@
   :dependencies [[org.clojure/clojure "1.10.0" :scope "provided"]
                  [com.atlassian.oai/swagger-request-validator-core "2.8.3"]]
   :profiles {:dev {:dependencies [[org.clojure/data.json "0.2.7"]]
-                   :resource-paths ["dev-resources"]}}
+                   :resource-paths ["dev-resources"]
+                   :plugins [[lein-codox "0.10.7"]]
+                   :codox {:metadata {:doc/format :markdown}
+                           :output-path "codox"}}}
   :deploy-repositories [["releases" {:url "https://repo.clojars.org" :creds :gpg}]])
 
