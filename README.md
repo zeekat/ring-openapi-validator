@@ -20,6 +20,10 @@ to do the actual validation.
         (doseq [issue issues]
           (prn issue)))
 
+## Documentation
+
+API documentation is available at https://zeekat.github.io/ring-openapi-validator/
+
 ## License
 
 Copyright © 2020 Zeekat Software Ontwikkeling
