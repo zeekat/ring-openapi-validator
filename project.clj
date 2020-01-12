@@ -6,5 +6,6 @@
   :dependencies [[org.clojure/clojure "1.10.0" :scope "provided"]
                  [com.atlassian.oai/swagger-request-validator-core "2.8.3"]]
   :profiles {:dev {:dependencies [[org.clojure/data.json "0.2.7"]]
-                   :resource-paths ["dev-resources"]}})
+                   :resource-paths ["dev-resources"]}}
+  :deploy-repositories [["releases" {:url "https://repo.clojars.org" :creds :gpg}]])
 
