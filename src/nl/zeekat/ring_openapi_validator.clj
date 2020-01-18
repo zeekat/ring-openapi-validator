@@ -148,3 +148,45 @@
   If any issues are found, returns a report collection"
   [validator method path response]
   (report->coll (.validateResponse validator path (ring->Method method) (ring->Response response))))
+
+;;;
+;;; ring middleware
+;;;
+;;; TODO: tests
+;;;
+;;; questions:
+;;;
+;;; - should this be in its own ns/library?
+;;; - does the reporter function setup work?
+;;; - should we implement a default reporter?
+;;;   - which logger for a default reporter?
+;;; - what about pedestal/interceptors?
+;;;
+
+(defn wrap-openapi-request-validator
+  "Middleware to validate API requests using the given `validator`."
+  [f validator reporter]
+  (fn [request]
+    (if-let [report (validate-request request)]
+      (or (reporter {:request request :report report}) (f request))
+      (f request))))
+
+(defn wrap-openapi-response-validator
+  "Middleware to validate API responses using the given `validator`."
+  [f validator reporter]
+  (fn [{:keys [request-method uri] :as request}]
+    (let [response (f request)]
+      (if-let [report (validate-response request-method uri response)]
+        (or (reporter {:request request :response respons :report report})
+            response)
+        response))))
+
+(defn wrap-openapi-interaction-validator
+  "Middleware to validate API interaction (request + response) using the given `validator`."
+  [f validator reporter]
+  (fn [request]
+    (let [response (f request)]
+      (if-let [report (validate-interaction request response)]
+        (or (reporter {:request request :response respons :report report})
+            response)
+        response))))
