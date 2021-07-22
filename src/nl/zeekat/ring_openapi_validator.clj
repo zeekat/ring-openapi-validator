@@ -4,10 +4,13 @@
            com.atlassian.oai.validator.model.Request
            com.atlassian.oai.validator.model.Request$Method
            com.atlassian.oai.validator.model.Response
+           com.atlassian.oai.validator.model.StringBody
            com.atlassian.oai.validator.report.ValidationReport
            com.atlassian.oai.validator.report.ValidationReport$Level
            com.atlassian.oai.validator.report.ValidationReport$MessageContext$Location
-           java.util.Optional))
+           java.util.Optional
+           java.nio.charset.Charset
+           java.nio.charset.StandardCharsets))
 
 (def ^:private ring->Method
   {:get     Request$Method/GET
@@ -36,6 +39,23 @@
              {}
              headers))
 
+(defn- content-type->Charset
+  [ctype]
+  (let [charset (when ctype
+                  (-> ctype
+                      (string/replace #".*; *charset=" "")
+                      (string/replace #" .*" "")))]
+    (when (seq charset)
+      (Charset/forName charset))))
+
+(defn- ->StringBody
+  [headers body]
+  (when body
+    (StringBody. body (-> (get headers "content-type")
+                          first
+                          (content-type->Charset)
+                          (or StandardCharsets/UTF_8)))))
+
 (defn- ring->Request
   [{:keys [uri request-method body query-params headers]}]
   (let [headers (normalize-headers headers)]
@@ -46,6 +66,8 @@
         (ring->Method request-method))
       (getBody []
         (Optional/ofNullable body))
+      (getRequestBody []
+        (Optional/ofNullable (->StringBody headers body)))
       (getQueryParameters []
         (->> query-params
              keys
@@ -69,6 +91,8 @@
         status)
       (getBody []
         (Optional/ofNullable body))
+      (getResponseBody []
+        (Optional/ofNullable (->StringBody headers body)))
       (getHeaderValues [n]
         (->coll (get headers (string/lower-case n))))
       (getHeaderValue [n]
@@ -93,11 +117,6 @@
 (def ^:private Location->key
   {ValidationReport$MessageContext$Location/REQUEST  :request
    ValidationReport$MessageContext$Location/RESPONSE :response})
-
-(defn- Context->map
-  [ctx]
-  ;; TODO
-  )
 
 (defn- report->coll
   [report]
@@ -127,7 +146,7 @@
 
 (defn validate-interaction
   "Validate a `request`/`response` pair using the given `validator`.
-  
+
   If any issues are found, returns a report collection"
   [validator request response]
   (report->coll (.validate validator (ring->Request request) (ring->Response response))))
