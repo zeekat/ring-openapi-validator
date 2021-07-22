@@ -1,7 +1,8 @@
 (ns nl.zeekat.ring-openapi-validator-test
-  (:require [nl.zeekat.ring-openapi-validator :as validator]
+  (:require [clojure.data.json :as json]
+            [clojure.java.io :as io]
             [clojure.test :refer [deftest testing is]]
-            [clojure.data.json :as json]))
+            [nl.zeekat.ring-openapi-validator :as validator]))
 
 (def ooapi-content-type "application/hal+json; charset=utf-8")
 
@@ -60,3 +61,7 @@
       (is (= "validation.response.body.schema.required"
              (get-in (validator/validate-response validator :get "/" ooapi-invalid-response) [0 :key]))
           "Report on invalid request"))))
+
+(deftest test-inline-validator
+  (is (instance? com.atlassian.oai.validator.OpenApiInteractionValidator
+                 (validator/openapi-validator (slurp (io/resource "ooapi.json")) {:inline? true}))))

@@ -132,11 +132,15 @@
 
   `opts` is an optional map of options:
    - `:base-path` overrides the base path in the spec.
+   - `:inline? true` indicate that `spec` is the specification body
+      as a string, instead of a url or path
 
   If you need to customize the validator you can create a builder using
   `com.atlassian.oai.validator.OpenApiInteractionValidator/createFor`"
-  ([spec {:keys [base-path] :as opts}]
-   (cond-> (OpenApiInteractionValidator/createFor spec)
+  ([spec {:keys [base-path inline?] :as opts}]
+   (cond-> (if inline?
+             (OpenApiInteractionValidator/createForInlineApiSpecification spec)
+             (OpenApiInteractionValidator/createFor spec))
      base-path
      (.withBasePathOverride base-path)
      true
