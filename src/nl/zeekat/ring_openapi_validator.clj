@@ -39,66 +39,37 @@
              {}
              headers))
 
-(defn- content-type->Charset
-  [ctype]
-  (let [charset (when ctype
-                  (-> ctype
-                      (string/replace #".*; *charset=" "")
-                      (string/replace #" .*" "")))]
-    (when (seq charset)
-      (Charset/forName charset))))
-
-(defn- ->StringBody
-  [headers body]
-  (when body
-    (StringBody. body (-> (get headers "content-type")
-                          first
-                          (content-type->Charset)
-                          (or StandardCharsets/UTF_8)))))
-
 (defn- ring->Request
   [{:keys [uri request-method body query-params headers]}]
   (let [headers (normalize-headers headers)]
-    (proxy [Request] []
-      (getPath []
+    (reify Request
+      (getPath [this]
         uri)
-      (getMethod []
+      (getMethod [this]
         (ring->Method request-method))
-      (getBody []
+      (getBody [this]
         (Optional/ofNullable body))
-      (getRequestBody []
-        (Optional/ofNullable (->StringBody headers body)))
-      (getQueryParameters []
+      (getQueryParameters [this]
         (->> query-params
              keys
              (map name)))
-      (getQueryParameterValues [n]
+      (getQueryParameterValues [this n]
         (->coll (get query-params n)))
-      (getHeaders []
+      (getHeaders [this]
         headers)
-      (getHeaderValues [n]
-        (->coll (get headers (string/lower-case n))))
-      (getHeaderValue [n]
-        (Optional/ofNullable (first (.getHeaderValues this n))))
-      (getContentType []
-        (.getHeaderValue this "content-type")))))
+      (getHeaderValues [this n]
+        (->coll (get headers (string/lower-case n)))))))
 
 (defn- ring->Response
   [{:keys [status body headers] :as response}]
   (let [headers (normalize-headers headers)]
-    (proxy [Response] []
-      (getStatus []
+    (reify Response
+      (getStatus [this]
         status)
-      (getBody []
+      (getBody [this]
         (Optional/ofNullable body))
-      (getResponseBody []
-        (Optional/ofNullable (->StringBody headers body)))
-      (getHeaderValues [n]
-        (->coll (get headers (string/lower-case n))))
-      (getHeaderValue [n]
-        (Optional/ofNullable (first (.getHeaderValues this n))))
-      (getContentType []
-        (.getHeaderValue this "content-type")))))
+      (getHeaderValues [this n]
+        (->coll (get headers (string/lower-case n)))))))
 
 (def ^:private Level->key
   {ValidationReport$Level/ERROR  :error
