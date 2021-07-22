@@ -7,7 +7,7 @@ to do the actual validation.
 
 ## Dependency coordinates
 
-    [nl.zeekat/ring-openapi-validator "0.1.0"]
+    [nl.zeekat/ring-openapi-validator "0.1.1"]
 
 ## Usage
 
@@ -26,7 +26,7 @@ API documentation is available at https://zeekat.github.io/ring-openapi-validato
 
 ## License
 
-Copyright © 2020 Zeekat Software Ontwikkeling
+Copyright © 2020 - 2021 Joost Diepenmaat, Zeekat Software Ontwikkeling
 
 This program and the accompanying materials are made available under the
 terms of the Eclipse Public License 2.0 which is available at
