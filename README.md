@@ -22,7 +22,7 @@ to do the actual validation.
 
 ## Documentation
 
-API documentation is available at https://zeekat.github.io/ring-openapi-validator/
+API documentation is available inline and at [cljdoc](https://cljdoc.org/d/nl.zeekat/ring-openapi-validator/CURRENT).
 
 ## License
 
