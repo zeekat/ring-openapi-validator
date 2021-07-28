@@ -1,5 +1,5 @@
 (ns nl.zeekat.ring-openapi-validator-test
-  (:require [clojure.data.json :as json]
+  (:require [cheshire.core :as json]
             [clojure.java.io :as io]
             [clojure.test :refer [deftest testing is]]
             [nl.zeekat.ring-openapi-validator :as validator]))
@@ -30,11 +30,11 @@
 
 (def ooapi-response  {:headers {"Content-Type" ooapi-content-type}
                       :status  200
-                      :body    (json/json-str ooapi-resource)})
+                      :body    (json/generate-string ooapi-resource)})
 
 (def ooapi-invalid-response  {:headers {"Content-Type" ooapi-content-type}
                               :status  200
-                              :body    (json/json-str (dissoc ooapi-resource :owner))})
+                              :body    (json/generate-string (dissoc ooapi-resource :owner))})
 
 (deftest test-openapi-validator
   (let [validator (validator/openapi-validator "ooapi.json" {})]
