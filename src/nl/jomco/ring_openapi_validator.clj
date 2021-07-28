@@ -1,4 +1,4 @@
-(ns nl.zeekat.ring-openapi-validator
+(ns nl.jomco.ring-openapi-validator
   (:require [clojure.string :as string]
             [cheshire.core :as json])
   (:import com.atlassian.oai.validator.OpenApiInteractionValidator

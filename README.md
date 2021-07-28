@@ -7,11 +7,11 @@ to do the actual validation.
 
 ## Dependency coordinates
 
-    [nl.zeekat/ring-openapi-validator "0.1.1"]
+    [nl.jomco/ring-openapi-validator "0.1.1"]
 
 ## Usage
 
-      (require '[nl.zeekat.ring-openapi-validator :as validator])
+      (require '[nl.jomco.ring-openapi-validator :as validator])
       
       (def validator (validator/openapi-validator "path/to/spec.json"))
       
@@ -22,11 +22,11 @@ to do the actual validation.
 
 ## Documentation
 
-API documentation is available inline and at [cljdoc](https://cljdoc.org/d/nl.zeekat/ring-openapi-validator/CURRENT).
+API documentation is available inline and at [cljdoc](https://cljdoc.org/d/nl.jomco/ring-openapi-validator/CURRENT).
 
 ## License
 
-Copyright © 2020 - 2021 Joost Diepenmaat, Zeekat Software Ontwikkeling
+Copyright © 2020 - 2021 Joost Diepenmaat
 
 This program and the accompanying materials are made available under the
 terms of the Eclipse Public License 2.0 which is available at
